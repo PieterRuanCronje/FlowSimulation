@@ -115,7 +115,7 @@ public class FlowSimulation {
             ratio = dY/dX 
             opp = opposite side of the triangle
             adj = adjacent side of the triangle
-            sideLength = length of a side of the block (calculated with using Pythagoras' theorom)
+            sideLength = length of a side of the block (calculated using Pythagoras' theorom)
             cP = 'c' value of the function with positive gradient
             cN = 'c' value of the function with negative gradient
         */

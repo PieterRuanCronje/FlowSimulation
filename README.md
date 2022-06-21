@@ -1,12 +1,12 @@
 ## FlowSimulation
 A simple flow simulation within a random three-dimensional block system.
 
-Requirements: Java has to be installed
+Requirements: Java installation
 
 Instructions:
   1. Download all the files in this repository to a single directory.
   2. Open a terminal in that directory and run the command 'javac *.java'
-  3. Finally you can run the command 'java FlowSimulation n p'
+  3. Run the command 'java FlowSimulation n p'
 
 (n = amount of blocks in a row, p = probability of a space being occupied)
 

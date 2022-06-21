@@ -100,7 +100,6 @@ public class FlowSimulation {
         Place a block on screen according to its position in the array.
     */
     public static void placeBlock(int i, int j, int k, int n, boolean isBlock) {
-
         /*
             The position of a block is calculated by representing the bottom corner of
             a block as the intersection of two lines with gradients of tan(PI/6) and -tan(PI/6)

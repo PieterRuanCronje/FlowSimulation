@@ -137,7 +137,7 @@ public class FlowSimulation {
         double[] y = new double[4];
 
         /*
-            Draw the block using the characteristics of an isometric 3D block. 
+            Draw the block using the properties of an isometric 3D block. 
         */
         if (isBlock) StdDraw.setPenColor(StdDraw.BLACK);
         else StdDraw.setPenColor(StdDraw.BOOK_BLUE);

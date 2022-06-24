@@ -1,9 +1,10 @@
 public class FlowSimulation {
+    
     public static void main(String[] args) {
         /* 
             First command-line argument, the size of the system. (n x n x n)
         */
-        int    n = Integer.parseInt(args[0]);
+        int n = Integer.parseInt(args[0]);
 
         /*
             Second command-line argument, the probability of a block to be occupied.
@@ -19,7 +20,8 @@ public class FlowSimulation {
         /*
             Set up the size and background of the window.
         */
-        StdDraw.setCanvasSize(512, (int) Math.round(512 * 1.15));
+        StdDraw.setCanvasSize(512*3, (int) Math.round(512 * 1.15));
+        StdDraw.setXscale(0, 3);
         StdDraw.setYscale(0, 1.15);
         StdDraw.setPenColor(StdDraw.BOOK_RED);
         StdDraw.filledRectangle(512.0/2.0, 512.0*1.15/2.0, 512.0/2.0, 512.0*1.15/2.0);
@@ -138,24 +140,66 @@ public class FlowSimulation {
         /*
             Draw the block using the properties of an isometric 3D block. 
         */
-        if (isBlock) StdDraw.setPenColor(StdDraw.BLACK);
-        else StdDraw.setPenColor(StdDraw.BOOK_BLUE);
+        if (isBlock) {
+            StdDraw.setPenColor(StdDraw.BLACK);
+            x[0] = X + 1.0     ; y[0] = Y;
+            x[1] = X + 1.0      ; y[1] = Y + sideLength;
+            x[2] = X + adj + 1.0; y[2] = Y + opp + sideLength;
+            x[3] = X + adj + 1.0; y[3] = Y + opp;
+            StdDraw.filledPolygon(x, y);
+        }
+        else {
+            StdDraw.setPenColor(StdDraw.BOOK_BLUE);
+            x[0] = X + 2.0      ; y[0] = Y;
+            x[1] = X + 2.0      ; y[1] = Y + sideLength;
+            x[2] = X + adj + 2.0; y[2] = Y + opp + sideLength;
+            x[3] = X + adj + 2.0; y[3] = Y + opp;
+            StdDraw.filledPolygon(x, y);
+        }
         x[0] = X      ; y[0] = Y;
         x[1] = X      ; y[1] = Y + sideLength;
         x[2] = X + adj; y[2] = Y + opp + sideLength;
         x[3] = X + adj; y[3] = Y + opp;
         StdDraw.filledPolygon(x, y);
         
-        if (isBlock) StdDraw.setPenColor(StdDraw.GRAY);
-        else StdDraw.setPenColor(StdDraw.BOOK_LIGHT_BLUE);
+        if (isBlock) {
+            StdDraw.setPenColor(StdDraw.GRAY);
+            x[0] = X + 1.0      ; y[0] = Y;
+            x[1] = X + 1.0      ; y[1] = Y + sideLength;
+            x[2] = X - adj + 1.0; y[2] = Y + opp + sideLength;
+            x[3] = X - adj + 1.0; y[3] = Y + opp;
+            StdDraw.filledPolygon(x, y);
+        }
+        else {
+            StdDraw.setPenColor(StdDraw.BOOK_LIGHT_BLUE);
+            x[0] = X + 2.0      ; y[0] = Y;
+            x[1] = X + 2.0      ; y[1] = Y + sideLength;
+            x[2] = X - adj + 2.0; y[2] = Y + opp + sideLength;
+            x[3] = X - adj + 2.0; y[3] = Y + opp;
+            StdDraw.filledPolygon(x, y);
+        }
         x[0] = X      ; y[0] = Y;
         x[1] = X      ; y[1] = Y + sideLength;
         x[2] = X - adj; y[2] = Y + opp + sideLength;
         x[3] = X - adj; y[3] = Y + opp;
         StdDraw.filledPolygon(x, y);
 
-        if (isBlock) StdDraw.setPenColor(StdDraw.DARK_GRAY);
-        else StdDraw.setPenColor(StdDraw.BOOK_LIGHT_BLUE);
+        if (isBlock) {
+            StdDraw.setPenColor(StdDraw.DARK_GRAY);
+            x[0] = X + 1.0      ; y[0] = Y + sideLength;
+            x[1] = X + adj + 1.0; y[1] = Y + opp + sideLength;
+            x[2] = X + 1.0      ; y[2] = Y + 2*opp + sideLength;
+            x[3] = X - adj + 1.0; y[3] = Y + opp + sideLength;
+            StdDraw.filledPolygon(x, y);
+        }
+        else {
+            StdDraw.setPenColor(StdDraw.BOOK_LIGHT_BLUE);
+            x[0] = X + 2.0      ; y[0] = Y + sideLength;
+            x[1] = X + adj + 2.0; y[1] = Y + opp + sideLength;
+            x[2] = X + 2.0      ; y[2] = Y + 2*opp + sideLength;
+            x[3] = X - adj + 2.0; y[3] = Y + opp + sideLength;
+            StdDraw.filledPolygon(x, y);
+        }
         x[0] = X      ; y[0] = Y + sideLength;
         x[1] = X + adj; y[1] = Y + opp + sideLength;
         x[2] = X      ; y[2] = Y + 2*opp + sideLength;

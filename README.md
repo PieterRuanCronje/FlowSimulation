@@ -11,7 +11,9 @@ Instructions:
 (n = amount of blocks in a row, p = probability of a space being occupied)
 
 The following images were produced with the commands:
+
   -java FlowSimulation 10 0.6
+  
   -java FlowSimulation 100 0.65
 
 ![n=10_p=0 6](https://user-images.githubusercontent.com/79271609/175651697-25b41dc4-dbf2-47cd-9800-b33a84ae06db.png)

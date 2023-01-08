@@ -51,11 +51,9 @@ public class FlowSimulation {
     */
     public static boolean[][][] flow(boolean[][][] system, int n) {
         boolean[][][] flowState = new boolean[n][n][n];
-        for (int j = 0; j < n; j++) {
-            for (int k = 0; k < n; k++) {
+        for (int j = 0; j < n; j++)
+            for (int k = 0; k < n; k++)
                 flow(system, flowState, n, 0, j, k);
-            }
-        }
         return flowState;
     }
 

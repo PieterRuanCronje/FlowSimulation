@@ -1,6 +1,6 @@
 # FlowSimulation
 
-Simulate fluid flow within a random three-dimensional block system using this Java-based FlowSimulation tool.
+Simulate fluid flow within a random three-dimensional block system using Java.
 
 ## Requirements
 Ensure you have Java installed on your system.

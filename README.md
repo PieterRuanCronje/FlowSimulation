@@ -1,19 +1,36 @@
-## FlowSimulation
-A simple flow simulation within a random three-dimensional block system.
+# FlowSimulation
 
-Requirements: Java installation
+Simulate fluid flow within a random three-dimensional block system using this Java-based FlowSimulation tool.
 
-Instructions:
-  1. Download all the files in this repository to a single directory.
-  2. Open a terminal in that directory and run the command 'javac *.java'
-  3. Run the command 'java FlowSimulation n p'
+## Requirements
+Ensure you have Java installed on your system.
 
-(n = amount of blocks in a row, p = probability of a space being occupied)
+## Getting Started
+1. Download all the files from this repository and store them in a single directory.
+2. Open a terminal in that directory.
+3. Compile the Java files with the command:
+   ```bash
+   javac *.java
+   ```
+4. Run the simulation with the command:
+   ```bash
+   java FlowSimulation n p
+   ```
+   (Replace `n` with the number of blocks in a row and `p` with the probability of a space being occupied.)
 
-The following images were produced with the commands:
+## Example Simulations
 
-    -java FlowSimulation 10 0.6
-    -java FlowSimulation 100 0.65
+### Simulation with n=10, p=0.6
+```bash
+java FlowSimulation 10 0.6
+```
+![Simulation with n=10, p=0.6](https://user-images.githubusercontent.com/79271609/175651697-25b41dc4-dbf2-47cd-9800-b33a84ae06db.png)
 
-![n=10_p=0 6](https://user-images.githubusercontent.com/79271609/175651697-25b41dc4-dbf2-47cd-9800-b33a84ae06db.png)
-![n=100_p=0 65](https://user-images.githubusercontent.com/79271609/175651869-a3a60035-d8df-4231-8869-9bcfa5c823a5.png)
+### Simulation with n=100, p=0.65
+```bash
+java FlowSimulation 100 0.65
+```
+![Simulation with n=100, p=0.65](https://user-images.githubusercontent.com/79271609/175651869-a3a60035-d8df-4231-8869-9bcfa5c823a5.png)
+
+## Possible Improvements
+Implement an algorithm to only draw blocks that will be visible.

@@ -10,11 +10,11 @@ Ensure you have Java installed on your system.
 2. Open a terminal in that directory.
 3. Compile the Java files with the command:
    ```bash
-   javac *.java
+   javac -d bin src/*.java
    ```
 4. Run the simulation with the command:
    ```bash
-   java FlowSimulation n p
+   java -cp src FlowSimulation n p
    ```
    (Replace `n` with the number of blocks in a row and `p` with the probability of a space being occupied.)
 

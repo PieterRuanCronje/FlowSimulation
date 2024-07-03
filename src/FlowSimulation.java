@@ -1,16 +1,61 @@
+import java.awt.Color;
+import java.util.Stack;
+
 /**
  * Visualises the simulated flow of water through a 3-dimensional
  * random block system.
  */
 public class FlowSimulation {
 
-    private boolean[][][] system; // block placement, {@code true} for an occupied space
-    private boolean[][][] flowState; // flow progress, {@code true} for a filled space
-    private int n; // size of the system
-    private double p; // probability of a space being occupied by a block
+    /*********************************************************************************************/
+
+    private static final byte BLOCK = 8;   // Block type (b1000)
+    private static final byte FLUID = 4;   // Fluid type (b0100)
+    private static final byte HOM_VIS = 2; // Visibility in the homogenous visualisation (b0010)
+    private static final byte HET_VIS = 1; // Visibility in the heterogenous visualisation (b0001)
+    private static final byte BOTH = 0;    // Used to disregard the type of the element (b0000)
 
     /**
-     * Initialise the flow simulation.
+     * Check if an element in the system is of a certain type.
+     * 
+     * @param element an element in the system
+     * @param type the element characteristics
+     * @return {@code true} if the element is of the specified type
+     */
+    public boolean check(byte element, byte type) {
+        // Use bitwise AND to check if the bits corresponding to 'type' are set in 'element'
+        return (element & type) == type;
+    }
+
+    /**
+     * Set an element to a specified type. (Elements can have multiple types)
+     * 
+     * @param element an element in the system
+     * @param type the type to set the element to
+     * @return the new element with its type altered
+     */
+    public byte set(byte space, byte type) {
+        // Use bitwise OR to set the bits corresponding to 'type' in 'element'
+        return (byte) (space | type);
+    }
+
+    /*********************************************************************************************/
+
+    private byte[][][] system; // Flow simulation system, refer to constants for clarity.
+    private int n; // Size of the system.
+    private double p; // Probability of a space being occupied by a block.
+
+    /*
+     * Used to check which elements have been visited when determining visibiity.
+     * This variable has to be reset after processing for each material is done.
+     * (BLOCK, FLUID, and BOTH)
+     */
+    private boolean[][][] visited = null;
+
+    private final Color BOOK_MEDIUM_BLUE = new Color(40, 150, 204); // Top section of the fluid.
+
+    /**
+     * Initialise and run the flow simulation.
      * 
      * @param n the size of the system (n x n x n)
      * @param p probability of a space being occupied (0 <= p <= 1)
@@ -19,14 +64,21 @@ public class FlowSimulation {
 
         this.n = n;
         this.p = p;
-        
-        // Set up the system.
-        system = new boolean[n][n][n];
-        createSystem();
 
-        // Simulate the flow.
-        flowState = new boolean[n][n][n];
+        // Set up the system and run the flow simulation.
+        system = new byte[n][n][n];
+        createSystem();
         flow();
+
+        // Determine the visibility of each element in the visualisation.
+        visited = new boolean[n][n][n];
+        determineVisibility(BOTH);
+
+        visited = new boolean[n][n][n];
+        determineVisibility(BLOCK);
+
+        visited = new boolean[n][n][n];
+        determineVisibility(FLUID);
     }
 
     /**
@@ -36,7 +88,8 @@ public class FlowSimulation {
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++)
                 for (int k = 0; k < n; k++)
-                    system[i][j][k] = StdRandom.bernoulli(p);
+                    if (Math.random() < p)
+                        system[i][j][k] = set(system[i][j][k], BLOCK);
     }
 
     /**
@@ -56,21 +109,89 @@ public class FlowSimulation {
      * @param k depth index
      */
     public void flow(int i, int j, int k) {
-        
-        if (i < 0 || i > n-1) return;
-        if (j < 0 || j > n-1) return;
-        if (k < 0 || k > n-1) return;
 
-        if (system[i][j][k] || flowState[i][j][k]) return;
+        if (i < 0 || i >= n || j < 0 || j >= n || k < 0 || k >= n)
+            return;
 
-        if(!system[i][j][k])
-            flowState[i][j][k] = true;
+        if (check(system[i][j][k], BLOCK) || check(system[i][j][k], FLUID))
+            return;
+
+        system[i][j][k] = set(system[i][j][k], FLUID);
 
         flow(i+1, j, k);
         flow(i, j-1, k);
         flow(i, j+1, k);
         flow(i, j, k+1);
         flow(i, j, k-1);
+    }
+
+    /**
+     * Determines which elements in the system will be visible in the visualisation.
+     * 
+     * @param type the element type for which to check visibility (BLOCK, FLUID, or BOTH)
+     */
+    public void determineVisibility(byte type) {
+
+        for (int j = 0; j < n; j++)
+            for (int k = 0; k < n; k++)
+                determineVisibility(0, j, k, type);
+
+        for (int i = 0; i < n; i++)
+            for (int k = 0; k < n; k++)
+                determineVisibility(i, n-1, k, type);
+
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                determineVisibility(i, j, 0, type);
+    }
+
+    /**
+     * Determines the visibility of the current element and checks the neighbouring positions.
+     * 
+     * @param i vertical index
+     * @param j horizontal index
+     * @param k depth index
+     * @param type the element type for which to check visibility (BLOCK, FLUID, or BOTH)
+     */
+    public void determineVisibility(int startI, int startJ, int startK, byte type) {
+
+        Stack<int[]> stack = new Stack<>();
+        stack.push(new int[]{startI, startJ, startK});
+
+        while (!stack.isEmpty()) {
+
+            int[] pos = stack.pop();
+
+            int i = pos[0];
+            int j = pos[1];
+            int k = pos[2];
+
+            // Boundary and visited checks.
+            if (i < 0 || i >= n || j < 0 || j >= n || k < 0 || k >= n || visited[i][j][k])
+                continue;
+
+            visited[i][j][k] = true;
+
+            byte element = system[i][j][k];
+
+            // Determine visibility.
+            if (type == BOTH && (check(element, BLOCK) || check(element, FLUID)))
+                system[i][j][k] = set(element, HET_VIS);
+
+            // (type != BOTH) ensures the omission of empty space.
+            else if (type != BOTH && check(element, type))
+                system[i][j][k] = set(element, HOM_VIS);
+
+            else {
+                // Push neighbors onto the stack.
+                stack.push(new int[]{i + 1, j, k});
+                stack.push(new int[]{i - 1, j, k});
+                stack.push(new int[]{i, j + 1, k});
+                stack.push(new int[]{i, j - 1, k});
+                stack.push(new int[]{i, j, k + 1});
+                stack.push(new int[]{i, j, k - 1});
+            }
+        }
     }
 
     /**
@@ -88,14 +209,11 @@ public class FlowSimulation {
         // Display the results after it has been processed.
         StdDraw.enableDoubleBuffering();
 
-        for (int i = n-1; i >= 0; i--) {
-            for (int j = 0; j < n; j++) {
-                for (int k = n - 1; k >= 0; k--) {
-                    if (system[i][j][k]) placeBlock(i, j, k, true);
-                    if (flowState[i][j][k]) placeBlock(i, j, k, false);
-                }
-            }
-        }
+        // Loop from bottom back corner to top front corner for correct block placement
+        for (int i = n-1; i >= 0; i--)
+            for (int j = 0; j < n; j++)
+                for (int k = n - 1; k >= 0; k--)
+                    placeBlock(i, j, k);
 
         // Show the reuslt of the simulation.
         StdDraw.show();
@@ -107,27 +225,28 @@ public class FlowSimulation {
      * @param i vertical index
      * @param j horizontal index
      * @param k depth index
-     * @param isBlock {@code true} for blocks, {@code false} for liquid
      */
-    public void placeBlock(int i, int j, int k, boolean isBlock) {
+    public void placeBlock(int i, int j, int k) {
+
         /*
-            The position of a block is calculated by representing the bottom corner of
-            a block as the intersection of two lines with gradients of tan(PI/6) and -tan(PI/6)
-            to create a 3D isometric plotting volume.
+         *  The position of a block is calculated by representing the bottom corner of
+         *  a block as the intersection of two lines with gradients of tan(PI/6) and -tan(PI/6)
+         *  to create a 3D isometric plotting volume.
+         *
+         *  y = m*x + c + adjustment
+         *
+         *  equations:
+         *      y = tan(PI/6)*x + 0.5 - tan(PI/6)*0.5 + 2*opp*k
+         *      y = -tan(PI/6)*x + 0.5 + tan(PI/6)*0.5 + 2*opp*(n-j-1)
+         *
+         *  ratio = the gradient, tan(PI/6) or -tan(PI/6) {equivalent to 30 degree lines} 
+         *  opp = opposite side of the triangle
+         *  adj = adjacent side of the triangle
+         *  sideLength = length of a side of the block (calculated using Pythagoras' theorem)
+         *  cP = 'c' value of the function with positive gradient
+         *  cN = 'c' value of the function with negative gradient
+         */
 
-            y = m*x + c + adjustment
-
-            equations:
-                y = tan(PI/6)*x + 0.5 - tan(PI/6)*0.5 + 2*opp*k
-                y = -tan(PI/6)*x + 0.5 + tan(PI/6)*0.5 + 2*opp*(n-j-1)
-            
-            ratio = the gradient, tan(PI/6) or -tan(PI/6) {equivalent to 30 degree lines} 
-            opp = opposite side of the triangle
-            adj = adjacent side of the triangle
-            sideLength = length of a side of the block (calculated using Pythagoras' theorom)
-            cP = 'c' value of the function with positive gradient
-            cN = 'c' value of the function with negative gradient
-        */
         double N = (double) n;
         double ratio = Math.tan(Math.PI/6.0);
         double opp = (ratio*0.45)/N;
@@ -143,30 +262,39 @@ public class FlowSimulation {
         double[] x = new double[4];
         double[] y = new double[4];
 
-        // Draw both solid and liquid blocks on the left of the display
-        StdDraw.setPenColor(isBlock ? StdDraw.BLACK : StdDraw.BOOK_BLUE);
-        x[0] = X      ; y[0] = Y;
-        x[1] = X      ; y[1] = Y + sideLength;
-        x[2] = X + adj; y[2] = Y + opp + sideLength;
-        x[3] = X + adj; y[3] = Y + opp;
-        StdDraw.filledPolygon(x, y);
+        byte element = system[i][j][k];
+
+        boolean isBlock = check(element, BLOCK);
+        boolean isFluid = check(element, FLUID);
+        boolean heterogenousVisibility = check(element, HET_VIS);
+        boolean homogenousVisibility = check(element, HOM_VIS);
+
+        if ((isBlock || isFluid) && heterogenousVisibility) { // Draw solid and fluid elements on the left.
+
+            StdDraw.setPenColor(isBlock ? StdDraw.BLACK : StdDraw.BOOK_BLUE);
+            x[0] = X      ; y[0] = Y;
+            x[1] = X      ; y[1] = Y + sideLength;
+            x[2] = X + adj; y[2] = Y + opp + sideLength;
+            x[3] = X + adj; y[3] = Y + opp;
+            StdDraw.filledPolygon(x, y);
+
+            StdDraw.setPenColor(isBlock ? StdDraw.GRAY : StdDraw.BOOK_LIGHT_BLUE);
+            x[0] = X      ; y[0] = Y;
+            x[1] = X      ; y[1] = Y + sideLength;
+            x[2] = X - adj; y[2] = Y + opp + sideLength;
+            x[3] = X - adj; y[3] = Y + opp;
+            StdDraw.filledPolygon(x, y);
+
+            StdDraw.setPenColor(isBlock ? StdDraw.DARK_GRAY : BOOK_MEDIUM_BLUE);
+            x[0] = X      ; y[0] = Y + sideLength;
+            x[1] = X + adj; y[1] = Y + opp + sideLength;
+            x[2] = X      ; y[2] = Y + 2*opp + sideLength;
+            x[3] = X - adj; y[3] = Y + opp + sideLength;
+            StdDraw.filledPolygon(x, y);
+        }
         
-        StdDraw.setPenColor(isBlock ? StdDraw.GRAY : StdDraw.BOOK_LIGHT_BLUE);
-        x[0] = X      ; y[0] = Y;
-        x[1] = X      ; y[1] = Y + sideLength;
-        x[2] = X - adj; y[2] = Y + opp + sideLength;
-        x[3] = X - adj; y[3] = Y + opp;
-        StdDraw.filledPolygon(x, y);
+        if (isBlock && homogenousVisibility) { // Draw solid elements in the middle.
 
-        StdDraw.setPenColor(isBlock ? StdDraw.DARK_GRAY : StdDraw.BOOK_LIGHT_BLUE);
-        x[0] = X      ; y[0] = Y + sideLength;
-        x[1] = X + adj; y[1] = Y + opp + sideLength;
-        x[2] = X      ; y[2] = Y + 2*opp + sideLength;
-        x[3] = X - adj; y[3] = Y + opp + sideLength;
-        StdDraw.filledPolygon(x, y);
-
-        // Draw solid blocks in the center of the display, and liquid blocks on the right.
-        if (isBlock) {
             StdDraw.setPenColor(StdDraw.BLACK);
             x[0] = X + 1      ; y[0] = Y;
             x[1] = X + 1      ; y[1] = Y + sideLength;
@@ -187,7 +315,9 @@ public class FlowSimulation {
             x[2] = X + 1      ; y[2] = Y + 2*opp + sideLength;
             x[3] = X - adj + 1; y[3] = Y + opp + sideLength;
             StdDraw.filledPolygon(x, y);
-        } else {
+
+        } else if (isFluid && homogenousVisibility) { // Draw fluid elements on the right.
+
             StdDraw.setPenColor(StdDraw.BOOK_BLUE);
             x[0] = X + 2      ; y[0] = Y;
             x[1] = X + 2      ; y[1] = Y + sideLength;
@@ -202,7 +332,7 @@ public class FlowSimulation {
             x[3] = X - adj + 2; y[3] = Y + opp;
             StdDraw.filledPolygon(x, y);
 
-            StdDraw.setPenColor(StdDraw.BOOK_LIGHT_BLUE);
+            StdDraw.setPenColor(BOOK_MEDIUM_BLUE);
             x[0] = X + 2      ; y[0] = Y + sideLength;
             x[1] = X + adj + 2; y[1] = Y + opp + sideLength;
             x[2] = X + 2      ; y[2] = Y + 2*opp + sideLength;
@@ -213,6 +343,7 @@ public class FlowSimulation {
 
     /**
      * Main function for the flow simulation.
+     * Program usage: java -cp bin FlowSimulation n p
      * 
      * @param args command-line arguments
      */
@@ -223,8 +354,8 @@ public class FlowSimulation {
             System.exit(0);
         }
 
-        int n = 0; // first command-line argument, the size of the system
-        double p = 0; // second command-line argument, the probability of a block to be occupied
+        int n = 0; // First command-line argument, the size of the system.
+        double p = 0; // Second command-line argument, the probability of a block being occupied.
 
         try {
             n = Integer.parseInt(args[0]);
@@ -244,8 +375,14 @@ public class FlowSimulation {
             System.exit(0);
         }
 
-        // Create a new flow-system and let the liquid flow through it.
+        Stopwatch stopwatch = new Stopwatch();
+
+        // Create a new flow simulation.
         FlowSimulation flowSimulation = new FlowSimulation(n, p);
+
+        // Display the result of the simulation.
         flowSimulation.display();
+
+        System.out.println(stopwatch.elapsedTime());
     }
 }

@@ -148,9 +148,9 @@ public class FlowSimulation {
     /**
      * Determines the visibility of the current element and checks the neighbouring positions.
      * 
-     * @param i vertical index
-     * @param j horizontal index
-     * @param k depth index
+     * @param startI vertical index
+     * @param startJ horizontal index
+     * @param startK depth index
      * @param type the element type for which to check visibility (BLOCK, FLUID, or BOTH)
      */
     public void determineVisibility(int startI, int startJ, int startK, byte type) {
@@ -209,7 +209,7 @@ public class FlowSimulation {
         // Display the results after it has been processed.
         StdDraw.enableDoubleBuffering();
 
-        // Loop from bottom back corner to top front corner for correct block placement
+        // Loop from bottom back corner to top front corner for correct block placement.
         for (int i = n-1; i >= 0; i--)
             for (int j = 0; j < n; j++)
                 for (int k = n - 1; k >= 0; k--)
@@ -264,6 +264,7 @@ public class FlowSimulation {
 
         byte element = system[i][j][k];
 
+        // Obtain element characteristics.
         boolean isBlock = check(element, BLOCK);
         boolean isFluid = check(element, FLUID);
         boolean heterogenousVisibility = check(element, HET_VIS);
@@ -367,7 +368,7 @@ public class FlowSimulation {
 
         if (n < 0) {
             System.out.println("Argument 'n' must be a positive integer.");
-            System.exit(n);
+            System.exit(0);
         }
 
         if (p < 0 || p > 1) {

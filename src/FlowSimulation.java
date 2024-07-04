@@ -45,13 +45,6 @@ public class FlowSimulation {
     private int n; // Size of the system.
     private double p; // Probability of a space being occupied by a block.
 
-    /*
-     * Used to check which elements have been visited when determining visibiity.
-     * This variable has to be reset after processing for each material is done.
-     * (BLOCK, FLUID, and BOTH)
-     */
-    private boolean[][][] visited = null;
-
     private final Color BOOK_MEDIUM_BLUE = new Color(40, 150, 204); // Top section of the fluid.
 
     /**
@@ -71,13 +64,8 @@ public class FlowSimulation {
         flow();
 
         // Determine the visibility of each element in the visualisation.
-        visited = new boolean[n][n][n];
         determineVisibility(BOTH);
-
-        visited = new boolean[n][n][n];
         determineVisibility(BLOCK);
-
-        visited = new boolean[n][n][n];
         determineVisibility(FLUID);
     }
 
@@ -128,10 +116,10 @@ public class FlowSimulation {
 
             if (i < 0 || i >= n || j < 0 || j >= n || k < 0 || k >= n)
                 continue;
-            
+
             if (check(system[i][j][k], BLOCK) || check(system[i][j][k], FLUID))
                 continue;
-            
+
             system[i][j][k] = set(system[i][j][k], FLUID);
 
             // For flow to go upwards as well, push {i-1, j, k} to the stack.
@@ -144,7 +132,7 @@ public class FlowSimulation {
     }
 
     /**
-     * Determines which elements in the system will be visible in the visualisation.
+     * Determines the visibility of the current element and checks the neighbouring positions.
      * 
      * @param type the element type for which to check visibility (BLOCK, FLUID, or BOTH)
      */
@@ -152,73 +140,43 @@ public class FlowSimulation {
 
         for (int j = 0; j < n; j++)
             for (int k = 0; k < n; k++)
-                determineVisibility(0, j, k, type);
+                scan(0, j, k, type);
 
         for (int i = 0; i < n; i++)
             for (int k = 0; k < n; k++)
-                determineVisibility(i, n-1, k, type);
+                scan(i, n-1, k, type);
 
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++)
-                determineVisibility(i, j, 0, type);
+                scan(i, j, 0, type);
     }
 
     /**
-     * Determines the visibility of the current element and checks the neighbouring positions.
+     * Scans for visible blocks through straight diagonal lines sent from the three visible
+     * sides of the isometric system.
      * 
-     * @param startI vertical index
-     * @param startJ horizontal index
-     * @param startK depth index
+     * @param i vertical index
+     * @param j horizontal index
+     * @param k depth index
      * @param type the element type for which to check visibility (BLOCK, FLUID, or BOTH)
      */
-    public void determineVisibility(int startI, int startJ, int startK, byte type) {
+    public void scan(int i, int j, int k, byte type) {
 
-        /*
-         * The idea is to percolate through the non-target space from the three visible sides
-         * of the isomentric system. Along the way mark the boundaries consisting of the desired
-         * material as visible. For `type=BOTH` empty space will be the non-target space and for
-         * BLOCK and FLUID the non-target space will be the other material along with empty space.
-         * Heterogenous visibility refers to the visibility of a block when it is combined in a
-         * system with the other material. Homogenous visibility refers to the visibility of the
-         * block alongside only the blocks of the same material.
-         */
+        byte element;
 
-        Stack<int[]> stack = new Stack<>();
-        stack.push(new int[]{startI, startJ, startK});
+        while (i >= 0 && i < n && j >= 0 && j < n && k >= 0 && k < n) {
 
-        while (!stack.isEmpty()) {
+            element = system[i][j][k];
 
-            int[] pos = stack.pop();
-
-            int i = pos[0];
-            int j = pos[1];
-            int k = pos[2];
-
-            // Boundary and visited checks.
-            if (i < 0 || i >= n || j < 0 || j >= n || k < 0 || k >= n || visited[i][j][k])
-                continue;
-
-            visited[i][j][k] = true;
-
-            byte element = system[i][j][k];
-
-            // Determine visibility.
-            if (type == BOTH && (check(element, BLOCK) || check(element, FLUID)))
+            if (type == BOTH && (check(element, BLOCK) || check(element, FLUID))) {
                 system[i][j][k] = set(element, HET_VIS);
+                break;
 
-            // (type != BOTH) ensures the omission of empty space.
-            else if (type != BOTH && check(element, type))
+            } else if (type != BOTH && check(element, type)) {
                 system[i][j][k] = set(element, HOM_VIS);
+                break;
 
-            // Push neighbors onto the stack.
-            else {
-                stack.push(new int[]{i + 1, j, k});
-                stack.push(new int[]{i - 1, j, k});
-                stack.push(new int[]{i, j + 1, k});
-                stack.push(new int[]{i, j - 1, k});
-                stack.push(new int[]{i, j, k + 1});
-                stack.push(new int[]{i, j, k - 1});
-            }
+            } else { i++; j--; k++; }
         }
     }
 

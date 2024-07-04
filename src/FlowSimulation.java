@@ -7,13 +7,16 @@ import java.util.Stack;
  */
 public class FlowSimulation {
 
+    private int elementCount = 0;
+    private int drawCount = 0;
+
     /*********************************************************************************************/
 
     private static final byte BLOCK = 8;   // Block type (b1000)
     private static final byte FLUID = 4;   // Fluid type (b0100)
     private static final byte HOM_VIS = 2; // Visibility in the homogenous visualisation (b0010)
     private static final byte HET_VIS = 1; // Visibility in the heterogenous visualisation (b0001)
-    private static final byte BOTH = 0;    // Used to disregard the type of the element (b0000)
+    private static final byte BOTH = 0;    // Disregards the type of the element (b0000)
 
     /**
      * Check if an element in the system is of a certain type.
@@ -102,27 +105,45 @@ public class FlowSimulation {
     }
 
     /**
-     * Continue the flow of the system.
+     * Continue the flow of liquid through the system.
      * 
      * @param i vertical index
      * @param j horizontal index
      * @param k depth index
      */
-    public void flow(int i, int j, int k) {
+    public void flow(int startI, int startJ, int startK) {
 
-        if (i < 0 || i >= n || j < 0 || j >= n || k < 0 || k >= n)
-            return;
+        /*
+         * Converted from recursive to iterative approach for
+         * better scalability.
+         */
 
-        if (check(system[i][j][k], BLOCK) || check(system[i][j][k], FLUID))
-            return;
+        Stack<int[]> stack = new Stack<>();
+        stack.push(new int[]{startI, startJ, startK});
 
-        system[i][j][k] = set(system[i][j][k], FLUID);
+        while (!stack.isEmpty()) {
 
-        flow(i+1, j, k);
-        flow(i, j-1, k);
-        flow(i, j+1, k);
-        flow(i, j, k+1);
-        flow(i, j, k-1);
+            int[] position = stack.pop();
+
+            int i = position[0];
+            int j = position[1];
+            int k = position[2];
+
+            if (i < 0 || i >= n || j < 0 || j >= n || k < 0 || k >= n)
+                continue;
+            
+            if (check(system[i][j][k], BLOCK) || check(system[i][j][k], FLUID))
+                continue;
+            
+            system[i][j][k] = set(system[i][j][k], FLUID);
+
+            // For flow to go upwards as well, push {i-1, j, k} to the stack.
+            stack.push(new int[]{i+1, j, k});
+            stack.push(new int[]{i, j-1, k});
+            stack.push(new int[]{i, j+1, k});
+            stack.push(new int[]{i, j, k+1});
+            stack.push(new int[]{i, j, k-1});
+        }
     }
 
     /**
@@ -155,6 +176,16 @@ public class FlowSimulation {
      */
     public void determineVisibility(int startI, int startJ, int startK, byte type) {
 
+        /*
+         * The idea is to percolate through the non-target space from the three visible sides
+         * of the isomentric system. Along the way mark the boundaries consisting of the desired
+         * material as visible. For `type=BOTH` empty space will be the non-target space and for
+         * BLOCK and FLUID the non-target space will be the other material along with empty space.
+         * Heterogenous visibility refers to the visibility of a block when it is combined in a
+         * system with the other material. Homogenous visibility refers to the visibility of the
+         * block alongside only the blocks of the same material.
+         */
+
         Stack<int[]> stack = new Stack<>();
         stack.push(new int[]{startI, startJ, startK});
 
@@ -182,8 +213,8 @@ public class FlowSimulation {
             else if (type != BOTH && check(element, type))
                 system[i][j][k] = set(element, HOM_VIS);
 
+            // Push neighbors onto the stack.
             else {
-                // Push neighbors onto the stack.
                 stack.push(new int[]{i + 1, j, k});
                 stack.push(new int[]{i - 1, j, k});
                 stack.push(new int[]{i, j + 1, k});
@@ -228,6 +259,20 @@ public class FlowSimulation {
      */
     public void placeBlock(int i, int j, int k) {
 
+        byte element = system[i][j][k];
+
+        // Obtain element characteristics.
+        boolean isBlock = check(element, BLOCK);
+        boolean isFluid = check(element, FLUID);
+
+        if (!(isBlock || isFluid))
+            return;
+
+        elementCount++;
+
+        boolean heterogenousVisibility = check(element, HET_VIS);
+        boolean homogenousVisibility = check(element, HOM_VIS);
+
         /*
          *  The position of a block is calculated by representing the bottom corner of
          *  a block as the intersection of two lines with gradients of tan(PI/6) and -tan(PI/6)
@@ -262,15 +307,10 @@ public class FlowSimulation {
         double[] x = new double[4];
         double[] y = new double[4];
 
-        byte element = system[i][j][k];
+        if ((isBlock || isFluid) && heterogenousVisibility) {
 
-        // Obtain element characteristics.
-        boolean isBlock = check(element, BLOCK);
-        boolean isFluid = check(element, FLUID);
-        boolean heterogenousVisibility = check(element, HET_VIS);
-        boolean homogenousVisibility = check(element, HOM_VIS);
-
-        if ((isBlock || isFluid) && heterogenousVisibility) { // Draw solid and fluid elements on the left.
+            drawCount++;
+            // Draw solid and fluid elements on the left.
 
             StdDraw.setPenColor(isBlock ? StdDraw.BLACK : StdDraw.BOOK_BLUE);
             x[0] = X      ; y[0] = Y;
@@ -294,7 +334,9 @@ public class FlowSimulation {
             StdDraw.filledPolygon(x, y);
         }
         
-        if (isBlock && homogenousVisibility) { // Draw solid elements in the middle.
+        if (isBlock && homogenousVisibility) {
+            drawCount++;
+            // Draw solid elements in the middle.
 
             StdDraw.setPenColor(StdDraw.BLACK);
             x[0] = X + 1      ; y[0] = Y;
@@ -317,7 +359,9 @@ public class FlowSimulation {
             x[3] = X - adj + 1; y[3] = Y + opp + sideLength;
             StdDraw.filledPolygon(x, y);
 
-        } else if (isFluid && homogenousVisibility) { // Draw fluid elements on the right.
+        } else if (isFluid && homogenousVisibility) {
+            drawCount++;
+            // Draw fluid elements on the right.
 
             StdDraw.setPenColor(StdDraw.BOOK_BLUE);
             x[0] = X + 2      ; y[0] = Y;
@@ -340,6 +384,14 @@ public class FlowSimulation {
             x[3] = X - adj + 2; y[3] = Y + opp + sideLength;
             StdDraw.filledPolygon(x, y);
         }
+    }
+
+    public int getElementCount() {
+        return elementCount;
+    }
+
+    public int getDrawCount() {
+        return drawCount;
     }
 
     /**
@@ -384,6 +436,8 @@ public class FlowSimulation {
         // Display the result of the simulation.
         flowSimulation.display();
 
-        System.out.println(stopwatch.elapsedTime());
+        System.out.println("Processing time: " + stopwatch.elapsedTime() + " seconds");
+        System.out.println("Elements drawn without optimisation: " + flowSimulation.getElementCount()*2);
+        System.out.println("Elements drawn with optimisation: " + flowSimulation.getDrawCount());
     }
 }

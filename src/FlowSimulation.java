@@ -42,8 +42,10 @@ public class FlowSimulation {
     /*********************************************************************************************/
 
     private byte[][][] system; // Flow simulation system, refer to constants for clarity.
-    private int n; // Size of the system.
-    private double p; // Probability of a space being occupied by a block.
+    private int n;             // Size of the system.
+    private double p;          // Probability of a space being occupied by a block.
+    private boolean opt;       // Optimise the visualisation or not.
+    private boolean db;        // Use double buffering or not.
 
     private final Color BOOK_MEDIUM_BLUE = new Color(40, 150, 204); // Top section of the fluid.
 
@@ -52,11 +54,15 @@ public class FlowSimulation {
      * 
      * @param n the size of the system (n x n x n)
      * @param p probability of a space being occupied (0 <= p <= 1)
+     * @param opt {@code true} to optimise the visualisation
+     * @param db {@code true} to use doouble buffering for the visualisation
      */
-    public FlowSimulation(int n, double p) {
+    public FlowSimulation(int n, double p, boolean opt, boolean db) {
 
         this.n = n;
         this.p = p;
+        this.opt = opt;
+        this.db = db;
 
         // Set up the system and run the flow simulation.
         system = new byte[n][n][n];
@@ -64,9 +70,11 @@ public class FlowSimulation {
         flow();
 
         // Determine the visibility of each element in the visualisation.
-        determineVisibility(BOTH);
-        determineVisibility(BLOCK);
-        determineVisibility(FLUID);
+        if (opt) {
+            determineVisibility(BOTH);
+            determineVisibility(BLOCK);
+            determineVisibility(FLUID);
+        }
     }
 
     /**
@@ -81,7 +89,7 @@ public class FlowSimulation {
     }
 
     /**
-     * Start the flow at the top level and then recursively flow downwards.
+     * Start the flow at the top level and flow downwards.
      */
     public void flow() {
         for (int j = 0; j < n; j++)
@@ -132,7 +140,7 @@ public class FlowSimulation {
     }
 
     /**
-     * Determines the visibility of the current element and checks the neighbouring positions.
+     * Determine the visibility of the elements in the visualisation.
      * 
      * @param type the element type for which to check visibility (BLOCK, FLUID, or BOTH)
      */
@@ -192,8 +200,8 @@ public class FlowSimulation {
         StdDraw.setPenColor(StdDraw.BOOK_RED);
         StdDraw.filledRectangle(512.0/2.0, 512.0*1.15/2.0, 512.0/2.0, 512.0*1.15/2.0);
 
-        // Display the results after it has been processed.
-        StdDraw.enableDoubleBuffering();
+        // Display the results after it has been processed, if double buffering is selected.
+        if (db) StdDraw.enableDoubleBuffering();
 
         // Loop from bottom back corner to top front corner for correct block placement.
         for (int i = n-1; i >= 0; i--)
@@ -202,7 +210,7 @@ public class FlowSimulation {
                     placeBlock(i, j, k);
 
         // Show the reuslt of the simulation.
-        StdDraw.show();
+        if (db) StdDraw.show();
     }
 
     /**
@@ -223,8 +231,17 @@ public class FlowSimulation {
         if (!(isBlock || isFluid))
             return;
 
-        boolean heterogenousVisibility = check(element, HET_VIS);
-        boolean homogenousVisibility = check(element, HOM_VIS);
+        boolean heterogenousVisibility;
+        boolean homogenousVisibility;
+
+        // Use optimisation results or not.
+        if (opt) {
+            heterogenousVisibility = check(element, HET_VIS);
+            homogenousVisibility = check(element, HOM_VIS);
+        } else {
+            heterogenousVisibility = true;
+            homogenousVisibility = true;
+        }
 
         /*
          *  The position of a block is calculated by representing the bottom corner of
@@ -289,7 +306,7 @@ public class FlowSimulation {
         yTop[2] = Y + 2*opp + sideLength;
         yTop[3] = Y + opp + sideLength;
 
-        if ((isBlock || isFluid) && heterogenousVisibility) {
+        if (heterogenousVisibility) {
 
             StdDraw.setPenColor(isBlock ? StdDraw.BLACK : StdDraw.BOOK_BLUE);
             StdDraw.filledPolygon(xRight, ySides);
@@ -324,25 +341,39 @@ public class FlowSimulation {
 
     /**
      * Main function for the flow simulation.
-     * Program usage: java -cp bin FlowSimulation n p
+     * 
+     * Program usage: java -cp bin FlowSimulation n p opt db
+     * n - system size (n x n x n)
+     * p - probability of a space to be occupied by a block (0 <= p <= 1)
+     * opt - optimisation algorithm, 1 = optimise, 0 = do not optimise
+     * db - double buffering, 1 = show only final result, 0 = show progress
      * 
      * @param args command-line arguments
      */
     public static void main(String[] args) {
 
-        if (args.length != 2) {
-            System.out.println("Program usage: java -cp bin FlowSimulation n p");
+        if (args.length != 4) {
+            System.out.println("\nProgram usage: java -cp bin FlowSimulation n p opt db");
+            System.out.println("n - system size (n x n x n)");
+            System.out.println("p - probability of a space to be occupied by a block (0 <= p <= 1)");
+            System.out.println("opt - optimisation algorithm, 1 = optimise, 0 = do not optimise");
+            System.out.println("db - double buffering, 1 = show only final result, 0 = show progress\n");
             System.exit(0);
         }
 
-        int n = 0; // First command-line argument, the size of the system.
+        int n = 0;    // First command-line argument, the size of the system.
         double p = 0; // Second command-line argument, the probability of a block being occupied.
+        int opt = 0;  // Third command-line argument, optimise or not
+        int db = 0;   // Fourth command-line argument, use double buffering or not
 
         try {
             n = Integer.parseInt(args[0]);
             p = Double.parseDouble(args[1]);
+            opt = Integer.parseInt(args[2]);
+            db = Integer.parseInt(args[3]);
         } catch (Exception ignored) {
-            System.out.println("Arguments 'n' and 'p' must be numbers.");
+            System.out.print("Arguments 'n', 'opt', and 'db' must be integers, ");
+            System.out.println("'p' must be a floating point number.");
             System.exit(0);
         }
 
@@ -356,10 +387,20 @@ public class FlowSimulation {
             System.exit(0);
         }
 
+        if (!(opt == 1 || opt == 0)) {
+            System.out.println("Argument 'opt' must be 1 or 0.");
+            System.exit(0);
+        }
+
+        if (!(db == 1 || db == 0)) {
+            System.out.println("Argument 'db' must be 1 or 0.");
+            System.exit(0);
+        }
+
         Stopwatch stopwatch = new Stopwatch();
 
         // Create a new flow simulation.
-        FlowSimulation flowSimulation = new FlowSimulation(n, p);
+        FlowSimulation flowSimulation = new FlowSimulation(n, p, opt == 1, db == 1);
 
         // Display the result of the simulation.
         flowSimulation.display();

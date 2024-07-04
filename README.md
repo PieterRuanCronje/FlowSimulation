@@ -4,7 +4,7 @@ Simulate fluid flow within a random three-dimensional block system using Java.
 
 ## Overview
 
-A Java-based program designed to model and visualize the behavior of fluid flowing through a 3D grid system populated with randomly distributed blocks. Using bitwise operations for efficient type management and a stack-based flood fill algorithm. Visualisation is done by using the characteristics of isometric blocks, and is explained under "Mathematics for Isometric Visualisation" heading.
+A Java-based program designed to model and visualise the behaviour of fluid flowing through a 3D grid system populated with randomly distributed blocks. Using bitwise operations for efficient type management and a stack-based flood fill algorithm. Visualisation is done by using the characteristics of isometric blocks, and is explained under "Mathematics for Isometric Visualisation" heading.
 
 ## Implementation Features
 
@@ -40,31 +40,22 @@ A Java-based program designed to model and visualize the behavior of fluid flowi
    Replace `n`, `p`, `opt`, and `db` with appropriate values:
    - `n`: Size of the system (e.g., 50 for a 50x50x50 grid).
    - `p`: Probability of a block being occupied (e.g., 0.6).
-   - `opt`: Optimization flag (1 for optimized rendering, 0 otherwise).
-   - `db`: Double buffering flag (1 to show only the final result, 0 to show the progress).
+   - `opt`: Optimisation flag (1 for optimised rendering, 0 otherwise).
+   - `db`: Double buffering flag (1 to show only the final result (fastest), 0 to show the progress).
 
 ### Example Commands
 
-#### Example 1: Small System with Moderate Density
+#### Example 1:
 ```bash
 java -cp bin FlowSimulation 10 0.6 1 1
 ```
 ![Simulation with n=10, p=0.6](https://user-images.githubusercontent.com/79271609/175651697-25b41dc4-dbf2-47cd-9800-b33a84ae06db.png)
 
-#### Example 2: Large System with Slightly Higher Density
+#### Example 2:
 ```bash
 java -cp bin FlowSimulation 100 0.65 1 1
 ```
 ![Simulation with n=100, p=0.65](https://user-images.githubusercontent.com/79271609/175651869-a3a60035-d8df-4231-8869-9bcfa5c823a5.png)
-
-## Visualization
-
-The simulation uses isometric projections to render the 3D grid, where each block and fluid element is coloured based on its type:
-- **Blocks**: Displayed in various shades of grey.
-- **Fluid**: Shown in blue tones.
-- **Visibility**: Managed via bitwise flags, allowing selective rendering for performance optimisation.
-
-The `opt` flag controls whether the visibility preprocessing is done to avoid drawing hidden blocks, and the `db` flag determines if double buffering is used which only displays the final result. (`db = 0` will show the drawing progress)
 
 ## Mathematics for Isometric Visualisation
 

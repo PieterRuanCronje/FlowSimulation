@@ -7,9 +7,6 @@ import java.util.Stack;
  */
 public class FlowSimulation {
 
-    private int elementCount = 0;
-    private int drawCount = 0;
-
     /*********************************************************************************************/
 
     private static final byte BLOCK = 8;   // Block type (b1000)
@@ -268,8 +265,6 @@ public class FlowSimulation {
         if (!(isBlock || isFluid))
             return;
 
-        elementCount++;
-
         boolean heterogenousVisibility = check(element, HET_VIS);
         boolean homogenousVisibility = check(element, HOM_VIS);
 
@@ -304,94 +299,69 @@ public class FlowSimulation {
         double X = (cN + 2*opp*(n-j-1) - cP - 2*opp*k)/(2*ratio);
         double Y = ratio*X + cP + 2*k*opp + sideLength*(n-i-1);
 
-        double[] x = new double[4];
-        double[] y = new double[4];
+        double[] xRight = new double[4];
+        double[] xLeft = new double[4];
+        double[] xTop = new double[4];
+
+        double[] ySides = new double[4];
+        double[] yTop = new double[4];
+
+        xRight[0] = X;
+        xRight[1] = X;
+        xRight[2] = X + adj;
+        xRight[3] = X + adj;
+
+        xLeft[0] = X;
+        xLeft[1] = X;
+        xLeft[2] = X - adj;
+        xLeft[3] = X - adj;
+
+        xTop[0] = X;
+        xTop[1] = X + adj;
+        xTop[2] = X;
+        xTop[3] = X - adj;
+
+        ySides[0] = Y;
+        ySides[1] = Y + sideLength;
+        ySides[2] = Y + opp + sideLength;
+        ySides[3] = Y + opp;
+
+        yTop[0] = Y + sideLength;
+        yTop[1] = Y + opp + sideLength;
+        yTop[2] = Y + 2*opp + sideLength;
+        yTop[3] = Y + opp + sideLength;
 
         if ((isBlock || isFluid) && heterogenousVisibility) {
 
-            drawCount++;
-            // Draw solid and fluid elements on the left.
-
             StdDraw.setPenColor(isBlock ? StdDraw.BLACK : StdDraw.BOOK_BLUE);
-            x[0] = X      ; y[0] = Y;
-            x[1] = X      ; y[1] = Y + sideLength;
-            x[2] = X + adj; y[2] = Y + opp + sideLength;
-            x[3] = X + adj; y[3] = Y + opp;
-            StdDraw.filledPolygon(x, y);
+            StdDraw.filledPolygon(xRight, ySides);
 
             StdDraw.setPenColor(isBlock ? StdDraw.GRAY : StdDraw.BOOK_LIGHT_BLUE);
-            x[0] = X      ; y[0] = Y;
-            x[1] = X      ; y[1] = Y + sideLength;
-            x[2] = X - adj; y[2] = Y + opp + sideLength;
-            x[3] = X - adj; y[3] = Y + opp;
-            StdDraw.filledPolygon(x, y);
+            StdDraw.filledPolygon(xLeft, ySides);
 
             StdDraw.setPenColor(isBlock ? StdDraw.DARK_GRAY : BOOK_MEDIUM_BLUE);
-            x[0] = X      ; y[0] = Y + sideLength;
-            x[1] = X + adj; y[1] = Y + opp + sideLength;
-            x[2] = X      ; y[2] = Y + 2*opp + sideLength;
-            x[3] = X - adj; y[3] = Y + opp + sideLength;
-            StdDraw.filledPolygon(x, y);
+            StdDraw.filledPolygon(xTop, yTop);
         }
-        
-        if (isBlock && homogenousVisibility) {
-            drawCount++;
-            // Draw solid elements in the middle.
 
-            StdDraw.setPenColor(StdDraw.BLACK);
-            x[0] = X + 1      ; y[0] = Y;
-            x[1] = X + 1      ; y[1] = Y + sideLength;
-            x[2] = X + adj + 1; y[2] = Y + opp + sideLength;
-            x[3] = X + adj + 1; y[3] = Y + opp;
-            StdDraw.filledPolygon(x, y);
+        if (homogenousVisibility) {
 
-            StdDraw.setPenColor(StdDraw.GRAY);
-            x[0] = X + 1      ; y[0] = Y;
-            x[1] = X + 1      ; y[1] = Y + sideLength;
-            x[2] = X - adj + 1; y[2] = Y + opp + sideLength;
-            x[3] = X - adj + 1; y[3] = Y + opp;
-            StdDraw.filledPolygon(x, y);
+            int xT = isBlock ? 1 : 2; // X-translation
 
-            StdDraw.setPenColor(StdDraw.DARK_GRAY);
-            x[0] = X + 1      ; y[0] = Y + sideLength;
-            x[1] = X + adj + 1; y[1] = Y + opp + sideLength;
-            x[2] = X + 1      ; y[2] = Y + 2*opp + sideLength;
-            x[3] = X - adj + 1; y[3] = Y + opp + sideLength;
-            StdDraw.filledPolygon(x, y);
+            for (int t = 0; t < 4; t++) {
+                xRight[t] += xT;
+                xLeft[t] += xT;
+                xTop[t] += xT;
+            }
 
-        } else if (isFluid && homogenousVisibility) {
-            drawCount++;
-            // Draw fluid elements on the right.
+            StdDraw.setPenColor(isBlock ? StdDraw.BLACK : StdDraw.BOOK_BLUE);
+            StdDraw.filledPolygon(xRight, ySides);
 
-            StdDraw.setPenColor(StdDraw.BOOK_BLUE);
-            x[0] = X + 2      ; y[0] = Y;
-            x[1] = X + 2      ; y[1] = Y + sideLength;
-            x[2] = X + adj + 2; y[2] = Y + opp + sideLength;
-            x[3] = X + adj + 2; y[3] = Y + opp;
-            StdDraw.filledPolygon(x, y);
+            StdDraw.setPenColor(isBlock ? StdDraw.GRAY : StdDraw.BOOK_LIGHT_BLUE);
+            StdDraw.filledPolygon(xLeft, ySides);
 
-            StdDraw.setPenColor(StdDraw.BOOK_LIGHT_BLUE);
-            x[0] = X + 2      ; y[0] = Y;
-            x[1] = X + 2      ; y[1] = Y + sideLength;
-            x[2] = X - adj + 2; y[2] = Y + opp + sideLength;
-            x[3] = X - adj + 2; y[3] = Y + opp;
-            StdDraw.filledPolygon(x, y);
-
-            StdDraw.setPenColor(BOOK_MEDIUM_BLUE);
-            x[0] = X + 2      ; y[0] = Y + sideLength;
-            x[1] = X + adj + 2; y[1] = Y + opp + sideLength;
-            x[2] = X + 2      ; y[2] = Y + 2*opp + sideLength;
-            x[3] = X - adj + 2; y[3] = Y + opp + sideLength;
-            StdDraw.filledPolygon(x, y);
+            StdDraw.setPenColor(isBlock ? StdDraw.DARK_GRAY : BOOK_MEDIUM_BLUE);
+            StdDraw.filledPolygon(xTop, yTop);
         }
-    }
-
-    public int getElementCount() {
-        return elementCount;
-    }
-
-    public int getDrawCount() {
-        return drawCount;
     }
 
     /**
@@ -437,7 +407,5 @@ public class FlowSimulation {
         flowSimulation.display();
 
         System.out.println("Processing time: " + stopwatch.elapsedTime() + " seconds");
-        System.out.println("Elements drawn without optimisation: " + flowSimulation.getElementCount()*2);
-        System.out.println("Elements drawn with optimisation: " + flowSimulation.getDrawCount());
     }
 }

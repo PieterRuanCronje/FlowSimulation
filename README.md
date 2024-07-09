@@ -47,15 +47,16 @@ A Java-based program designed to model and visualise the behaviour of fluid flow
 
 #### Example 1:
 ```bash
-java -cp bin FlowSimulation 10 0.6 1 1
+java -cp bin FlowSimulation 10 0.67 1 1
 ```
-![Simulation with n=10, p=0.6](https://user-images.githubusercontent.com/79271609/175651697-25b41dc4-dbf2-47cd-9800-b33a84ae06db.png)
+
+![Simulation with n=10, p=0.67](https://github.com/PieterRuanCronje/FlowSimulation/assets/79271609/1a53880f-de78-4c73-8db5-fc1c3ed33607)
 
 #### Example 2:
 ```bash
-java -cp bin FlowSimulation 100 0.65 1 1
+java -cp bin FlowSimulation 150 0.66 1 1
 ```
-![Simulation with n=100, p=0.65](https://user-images.githubusercontent.com/79271609/175651869-a3a60035-d8df-4231-8869-9bcfa5c823a5.png)
+![Simulation with n=150, p=0.66](https://github.com/PieterRuanCronje/FlowSimulation/assets/79271609/790fdeec-47f2-4ddc-970c-e3e88b5ae290)
 
 ## Mathematics for Isometric Visualisation
 

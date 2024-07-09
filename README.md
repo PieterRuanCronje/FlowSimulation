@@ -55,6 +55,12 @@ java -cp bin FlowSimulation 150 0.66 1 1
 ```
 ![Simulation with n=150, p=0.66](https://github.com/PieterRuanCronje/FlowSimulation/assets/79271609/790fdeec-47f2-4ddc-970c-e3e88b5ae290)
 
+#### Example 3:
+```bash
+java -cp bin FlowSimulation 15 0.75 1 1
+```
+![Simulation with n=15, p=0.75](https://github.com/PieterRuanCronje/FlowSimulation/assets/79271609/cec393c0-fec9-47e2-8a31-a798b67bd749)
+
 ## Optimisation
 
 When optimisation is enabled, an algorithm is used that sends diagonal lines from the three visible sides of the isometric system to detect which blocks will be visible in the final visualisation. At most one redundant block will be drawn per line, and this only occurs when the elements in the diagonal lines directly to the through the sides and above an element are also visible. Checking for this would provide negligible drawing speed improvements and will lead to a slower overall simulation due to processing requirements.

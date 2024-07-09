@@ -63,7 +63,39 @@ java -cp bin FlowSimulation 15 0.75 1 1
 
 ## Optimisation
 
-When optimisation is enabled, an algorithm is used that sends diagonal lines from the three visible sides of the isometric system to detect which blocks will be visible in the final visualisation. At most one redundant block will be drawn per line, and this only occurs when the elements in the diagonal lines directly to the through the sides and above an element are also visible. Checking for this would provide negligible drawing speed improvements and will lead to a slower overall simulation due to processing requirements.
+When optimisation is enabled, an algorithm is used that scans for visible elements using diagonal lines, the `scan` method is called for each outer element of the three visible sides of the isometric system. At most one redundant block will be drawn per line, and this only occurs when elements in the diagonal lines directly through the sides and above an element are also visible. Checking for this would provide negligible drawing speed improvements and will lead to a slower overall simulation due to processing requirements.
+
+```java
+/**
+ * Scans for visible blocks through straight diagonal lines sent from the three visible
+ * sides of the isometric system.
+ * 
+ * @param i vertical index
+ * @param j horizontal index
+ * @param k depth index
+ * @param type the element type for which to check visibility (BLOCK, FLUID, or BOTH)
+ */
+public void scan(int i, int j, int k, byte type) {
+
+    byte element;
+
+    while (i >= 0 && i < n && j >= 0 && j < n && k >= 0 && k < n) {
+
+        element = system[i][j][k];
+
+        if (type == BOTH && (check(element, BLOCK) || check(element, FLUID))) {
+            system[i][j][k] = set(element, HET_VIS);
+            break;
+
+        // (type != BOTH) ensures the omission of empty space
+        } else if (type != BOTH && check(element, type)) {
+            system[i][j][k] = set(element, HOM_VIS);
+            break;
+
+        } else { i++; j--; k++; }
+    }
+}
+```
 
 #### Partially Drawn Simulation with Optimisation:
 ```bash

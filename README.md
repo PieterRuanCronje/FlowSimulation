@@ -4,7 +4,7 @@ Simulate fluid flow within a random three-dimensional block system using Java.
 
 ## Overview
 
-A Java-based program designed to model and visualise the behaviour of fluid flowing through a 3D grid system populated with randomly distributed blocks. Using bitwise operations for efficient type management and a stack-based flood fill algorithm. Visualisation is done by using the characteristics of isometric blocks, and is explained under "Mathematics for Isometric Visualisation" heading.
+A Java-based program designed to model and visualise the behaviour of fluid flowing through a 3D grid system populated with randomly placed blocks. It uses bitwise operations for efficient type management and a stack-based flood fill algorithm. Visualisation is done by using the characteristics of isometric blocks, and is explained under "Mathematics for Isometric Visualisation" heading.
 
 ## Implementation Features
 

@@ -15,7 +15,7 @@ A Java-based programme designed to model and visualise fluid behaviour within a 
 
 - Ensure Java is installed on your system.
 - The [StdDraw library](https://algs4.cs.princeton.edu/code/javadoc/edu/princeton/cs/algs4/StdDraw.html) for graphical visualisation is required.
-- The [StdOut library](https://algs4.cs.princeton.edu/code/edu/princeton/cs/algs4/StdOut.java.html) is also required by StdDraw and is provided in `lib` for convenience.
+- The [StdOut library](https://algs4.cs.princeton.edu/code/edu/princeton/cs/algs4/StdOut.java.html) is required by StdDraw. (Both are provided in `lib`, there's no need to go download these)
 
 ## Getting Started
 

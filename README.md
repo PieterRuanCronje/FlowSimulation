@@ -57,7 +57,7 @@ java -cp bin FlowSimulation 150 0.66 1 1
 
 ## Optimisation
 
-When optimisation is enabled, an algorithm is used that sends diagonal lines from the three visible sides of the isometric system to detect which blocks will be visible in the final visualisation. At most one redundant block will be drawn per line, and this only occurs when the elements directly to the sides and above an element are also visible. Checking for this would provide negligible drawing speed improvements and will lead to a slower overall simulation due to processing requirements.
+When optimisation is enabled, an algorithm is used that sends diagonal lines from the three visible sides of the isometric system to detect which blocks will be visible in the final visualisation. At most one redundant block will be drawn per line, and this only occurs when the elements in the diagonal lines directly to the through the sides and above an element are also visible. Checking for this would provide negligible drawing speed improvements and will lead to a slower overall simulation due to processing requirements.
 
 #### Partially Drawn Simulation with Optimisation:
 ```bash

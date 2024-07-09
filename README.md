@@ -2,7 +2,7 @@
 
 ## Overview
 
-A Java-based programme designed to model and visualise fluid behaviour within a 3D grid system populated with randomly placed blocks. It employs bitwise operations for efficient type management and utilises a stack-based flood fill algorithm. Visualisation is achieved using the characteristics of isometric blocks, detailed under the "Mathematics for Isometric Visualisation" heading.
+A Java-based program designed to model and visualise fluid behaviour within a 3D grid system populated with randomly placed blocks. It employs bitwise operations for efficient type management and utilises a stack-based flood fill algorithm. Visualisation is achieved using the characteristics of isometric blocks, detailed under the "Mathematics for Isometric Visualisation" heading.
 
 ## Implementation Features
 
@@ -67,7 +67,7 @@ java -cp bin FlowSimulation 25 0.66 1 0
 
 ## Double Buffering
 
-When double buffering is enabled, the programme processes the visualisation completely before displaying the result, which is ideal for large systems. When disabled, the programme shows how the grid is populated with blocks and fluid from the bottom upwards.
+When double buffering is enabled, the program processes the visualisation completely before displaying the result, which is ideal for large systems. When disabled, the program shows how the grid is populated with blocks and fluid from the bottom upwards.
 
 #### Example 1: Unoptimised Visualisation without Double Buffering
 ```bash

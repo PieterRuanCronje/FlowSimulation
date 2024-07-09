@@ -1,7 +1,5 @@
 # FlowSimulation
 
-Simulate fluid flow within a random three-dimensional block system using Java.
-
 ## Overview
 
 A Java-based program designed to model and visualise the behaviour of fluid flowing through a 3D grid system populated with randomly placed blocks. It uses bitwise operations for efficient type management and a stack-based flood fill algorithm. Visualisation is done by using the characteristics of isometric blocks, and is explained under "Mathematics for Isometric Visualisation" heading.
@@ -57,6 +55,24 @@ java -cp bin FlowSimulation 10 0.67 1 1
 java -cp bin FlowSimulation 150 0.66 1 1
 ```
 ![Simulation with n=150, p=0.66](https://github.com/PieterRuanCronje/FlowSimulation/assets/79271609/790fdeec-47f2-4ddc-970c-e3e88b5ae290)
+
+## Optimisation
+
+### Double Buffering
+
+When double buffering is enabled the program processes the visualisation completely before displaying the result, this is ideal for large systems. When it disabled the program will show how the grid is populated with blocks and fluid from the bottom upwards.
+
+#### Example 1: Unoptimised Visualisation with Double Buffering
+```bash
+java -cp bin FlowSimulation 150 0.66 1 1
+```
+![Unoptimised with Double Buffering](https://github.com/PieterRuanCronje/FlowSimulation/assets/79271609/7d726012-fc65-4c5c-beab-8b2223779d56)
+
+#### Example 2: Optimised Visualisation with Double Buffering
+```bash
+java -cp bin FlowSimulation 150 0.66 1 1
+```
+![Optimised with Double Buffering](https://github.com/PieterRuanCronje/FlowSimulation/assets/79271609/cfcf3e26-274f-4fd4-a0cd-0889e2fbd4ad)
 
 ## Mathematics for Isometric Visualisation
 

@@ -163,13 +163,13 @@ When double buffering is enabled, the program processes the visualisation comple
 
 #### Example 1: Unoptimised Visualisation without Double Buffering
 ```bash
-java -cp bin FlowSimulation 25 0.66 0 1
+java -cp bin FlowSimulation 25 0.66 0 0
 ```
 ![Unoptimised with Double Buffering](https://github.com/PieterRuanCronje/FlowSimulation/assets/79271609/7d726012-fc65-4c5c-beab-8b2223779d56)
 
 #### Example 2: Optimised Visualisation without Double Buffering
 ```bash
-java -cp bin FlowSimulation 150 0.66 1 0
+java -cp bin FlowSimulation 25 0.66 1 0
 ```
 ![Optimised with Double Buffering](https://github.com/PieterRuanCronje/FlowSimulation/assets/79271609/cfcf3e26-274f-4fd4-a0cd-0889e2fbd4ad)
 

@@ -94,7 +94,8 @@ public class FlowSimulation {
     public void flow() {
         for (int j = 0; j < n; j++)
             for (int k = 0; k < n; k++)
-                flow(0, j, k);
+                if (system[0][j][k] == 0) // empty element
+                    flow(0, j, k);
     }
 
     /**
@@ -214,6 +215,79 @@ public class FlowSimulation {
     }
 
     /**
+     * Calculates the plotting coordinates of an element using the characteristics of
+     * isometric cubes.
+     * 
+     * @param i vertical index
+     * @param j horizontal index
+     * @param k depth index
+     * @param xRight x-coordinates of the right section of the isometric cube
+     * @param xLeft x-coordinates of the left section of the isometric cube
+     * @param xTop x-coordinates of the top section of the isometric cube
+     * @param ySides y-coordinates of the side sections of the isometric cube
+     * @param yTop y-coordinates of the top section of the isometric cube
+     */
+    public void calculateCoordinates(int i, int j, int k,
+            double[] xRight, double[] xLeft, double[] xTop, double[] ySides, double[] yTop) {
+
+        /*
+         *  The position of a block is calculated by representing the bottom corner of
+         *  a block as the intersection of two lines with gradients of tan(PI/6) and -tan(PI/6)
+         *  to create a 3D isometric plotting volume.
+         *
+         *  y = m*x + c + adjustment
+         *
+         *  equations:
+         *      y = tan(PI/6)*x + 0.5 - tan(PI/6)*0.5 + 2*opp*k
+         *      y = -tan(PI/6)*x + 0.5 + tan(PI/6)*0.5 + 2*opp*(n-j-1)
+         *
+         *  ratio = the gradient, tan(PI/6) or -tan(PI/6) {equivalent to 30 degree lines} 
+         *  opp = opposite side of the triangle
+         *  adj = adjacent side of the triangle
+         *  sideLength = length of a side of the block (calculated using Pythagoras' theorem)
+         *  cP = 'c' value of the function with positive gradient
+         *  cN = 'c' value of the function with negative gradient
+         */
+
+        double N = (double) n;
+        double ratio = Math.tan(Math.PI/6.0);
+        double opp = (ratio*0.45)/N;
+        double adj = 0.45/N;
+        double sideLength = Math.sqrt((0.45 * ratio)*(0.45 * ratio) + (0.45*0.45))/N;
+        double cP = 0.05 - ratio*0.5;
+        double cN = 0.05 + ratio*0.5;
+
+        // Bottom X & Y coordinates of the block.
+        double X = (cN + 2*opp*(n-j-1) - cP - 2*opp*k)/(2*ratio);
+        double Y = ratio*X + cP + 2*k*opp + sideLength*(n-i-1);
+
+        xRight[0] = X;
+        xRight[1] = X;
+        xRight[2] = X + adj;
+        xRight[3] = X + adj;
+
+        xLeft[0] = X;
+        xLeft[1] = X;
+        xLeft[2] = X - adj;
+        xLeft[3] = X - adj;
+
+        xTop[0] = X;
+        xTop[1] = X + adj;
+        xTop[2] = X;
+        xTop[3] = X - adj;
+
+        ySides[0] = Y;
+        ySides[1] = Y + sideLength;
+        ySides[2] = Y + opp + sideLength;
+        ySides[3] = Y + opp;
+
+        yTop[0] = Y + sideLength;
+        yTop[1] = Y + opp + sideLength;
+        yTop[2] = Y + 2*opp + sideLength;
+        yTop[3] = Y + opp + sideLength;
+    }
+
+    /**
      * Display a block according to its position in the 3-dimensional array.
      * 
      * @param i vertical index
@@ -243,37 +317,6 @@ public class FlowSimulation {
             homogenousVisibility = true;
         }
 
-        /*
-         *  The position of a block is calculated by representing the bottom corner of
-         *  a block as the intersection of two lines with gradients of tan(PI/6) and -tan(PI/6)
-         *  to create a 3D isometric plotting volume.
-         *
-         *  y = m*x + c + adjustment
-         *
-         *  equations:
-         *      y = tan(PI/6)*x + 0.5 - tan(PI/6)*0.5 + 2*opp*k
-         *      y = -tan(PI/6)*x + 0.5 + tan(PI/6)*0.5 + 2*opp*(n-j-1)
-         *
-         *  ratio = the gradient, tan(PI/6) or -tan(PI/6) {equivalent to 30 degree lines} 
-         *  opp = opposite side of the triangle
-         *  adj = adjacent side of the triangle
-         *  sideLength = length of a side of the block (calculated using Pythagoras' theorem)
-         *  cP = 'c' value of the function with positive gradient
-         *  cN = 'c' value of the function with negative gradient
-         */
-
-        double N = (double) n;
-        double ratio = Math.tan(Math.PI/6.0);
-        double opp = (ratio*0.45)/N;
-        double adj = 0.45/N;
-        double sideLength = Math.sqrt((0.45 * ratio)*(0.45 * ratio) + (0.45*0.45))/N;
-        double cP = 0.05 - ratio*0.5;
-        double cN = 0.05 + ratio*0.5; 
-
-        // Bottom X & Y coordinates of the block.
-        double X = (cN + 2*opp*(n-j-1) - cP - 2*opp*k)/(2*ratio);
-        double Y = ratio*X + cP + 2*k*opp + sideLength*(n-i-1);
-
         double[] xRight = new double[4];
         double[] xLeft = new double[4];
         double[] xTop = new double[4];
@@ -281,30 +324,7 @@ public class FlowSimulation {
         double[] ySides = new double[4];
         double[] yTop = new double[4];
 
-        xRight[0] = X;
-        xRight[1] = X;
-        xRight[2] = X + adj;
-        xRight[3] = X + adj;
-
-        xLeft[0] = X;
-        xLeft[1] = X;
-        xLeft[2] = X - adj;
-        xLeft[3] = X - adj;
-
-        xTop[0] = X;
-        xTop[1] = X + adj;
-        xTop[2] = X;
-        xTop[3] = X - adj;
-
-        ySides[0] = Y;
-        ySides[1] = Y + sideLength;
-        ySides[2] = Y + opp + sideLength;
-        ySides[3] = Y + opp;
-
-        yTop[0] = Y + sideLength;
-        yTop[1] = Y + opp + sideLength;
-        yTop[2] = Y + 2*opp + sideLength;
-        yTop[3] = Y + opp + sideLength;
+        calculateCoordinates(i, j, k, xRight, xLeft, xTop, ySides, yTop);
 
         if (heterogenousVisibility) {
 
@@ -405,6 +425,6 @@ public class FlowSimulation {
         // Display the result of the simulation.
         flowSimulation.display();
 
-        System.out.println("Processing time: " + stopwatch.elapsedTime() + " seconds");
+        System.out.println("Simulation time: " + stopwatch.elapsedTime() + " seconds");
     }
 }

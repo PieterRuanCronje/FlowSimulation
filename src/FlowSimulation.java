@@ -95,7 +95,7 @@ public class FlowSimulation {
         for (int j = 0; j < n; j++)
             for (int k = 0; k < n; k++)
                 if (system[0][j][k] == 0) // empty element
-                    flow(0, j, k);
+                    flow(n-1, j, k);
     }
 
     /**
@@ -131,12 +131,12 @@ public class FlowSimulation {
 
             system[i][j][k] = set(system[i][j][k], FLUID);
 
-            // For flow to go upwards as well, push {i-1, j, k} to the stack.
-            stack.push(new int[]{i+1, j, k});
+            // For flow to go upwards as well, push {i+1, j, k} to the stack.
+            stack.push(new int[]{i-1, j, k});
             stack.push(new int[]{i, j-1, k});
             stack.push(new int[]{i, j+1, k});
-            stack.push(new int[]{i, j, k+1});
             stack.push(new int[]{i, j, k-1});
+            stack.push(new int[]{i, j, k+1});
         }
     }
 
@@ -149,11 +149,11 @@ public class FlowSimulation {
 
         for (int j = 0; j < n; j++)
             for (int k = 0; k < n; k++)
-                scan(0, j, k, type);
+                scan(n-1, j, k, type);
 
         for (int i = 0; i < n; i++)
             for (int k = 0; k < n; k++)
-                scan(i, n-1, k, type);
+                scan(i, 0, k, type);
 
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++)
@@ -185,7 +185,7 @@ public class FlowSimulation {
                 system[i][j][k] = set(element, HOM_VIS);
                 break;
 
-            } else { i++; j--; k++; }
+            } else { i--; j++; k++; }
         }
     }
 
@@ -205,8 +205,8 @@ public class FlowSimulation {
         if (db) StdDraw.enableDoubleBuffering();
 
         // Loop from bottom back corner to top front corner for correct block placement.
-        for (int i = n-1; i >= 0; i--)
-            for (int j = 0; j < n; j++)
+        for (int i = 0; i < n; i++)
+            for (int j = n-1; j >= 0; j--)
                 for (int k = n - 1; k >= 0; k--)
                     placeBlock(i, j, k);
 
@@ -231,22 +231,7 @@ public class FlowSimulation {
             double[] xRight, double[] xLeft, double[] xTop, double[] ySides, double[] yTop) {
 
         /*
-         *  The position of a block is calculated by representing the bottom corner of
-         *  a block as the intersection of two lines with gradients of tan(PI/6) and -tan(PI/6)
-         *  to create a 3D isometric plotting volume.
-         *
-         *  y = m*x + c + adjustment
-         *
-         *  equations:
-         *      y = tan(PI/6)*x + 0.5 - tan(PI/6)*0.5 + 2*opp*k
-         *      y = -tan(PI/6)*x + 0.5 + tan(PI/6)*0.5 + 2*opp*(n-j-1)
-         *
-         *  ratio = the gradient, tan(PI/6) or -tan(PI/6) {equivalent to 30 degree lines} 
-         *  opp = opposite side of the triangle
-         *  adj = adjacent side of the triangle
-         *  sideLength = length of a side of the block (calculated using Pythagoras' theorem)
-         *  cP = 'c' value of the function with positive gradient
-         *  cN = 'c' value of the function with negative gradient
+         * TODO: write comments explaining where the math comes from
          */
 
         double N = (double) n;
@@ -254,12 +239,10 @@ public class FlowSimulation {
         double opp = (ratio*0.45)/N;
         double adj = 0.45/N;
         double sideLength = Math.sqrt((0.45 * ratio)*(0.45 * ratio) + (0.45*0.45))/N;
-        double cP = 0.05 - ratio*0.5;
-        double cN = 0.05 + ratio*0.5;
 
         // Bottom X & Y coordinates of the block.
-        double X = (cN + 2*opp*(n-j-1) - cP - 2*opp*k)/(2*ratio);
-        double Y = ratio*X + cP + 2*k*opp + sideLength*(n-i-1);
+        double X = (k-j)*sideLength/(2*ratio) + 0.5;
+        double Y = ratio*(X-0.5) + 0.05 + (j+i)*sideLength;
 
         xRight[0] = X;
         xRight[1] = X;

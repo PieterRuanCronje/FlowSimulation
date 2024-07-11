@@ -61,9 +61,15 @@ java -cp bin FlowSimulation 15 0.75 1 1
 ```
 ![Simulation with n=15, p=0.75](https://github.com/PieterRuanCronje/FlowSimulation/assets/79271609/cec393c0-fec9-47e2-8a31-a798b67bd749)
 
-## Optimisation
+## Implementation Details
 
-When optimisation is enabled, an algorithm is used that scans for visible elements using diagonal lines, the `scan` method is called for each outer element of the three visible sides of the isometric system. At most one redundant block will be drawn per line, and this only occurs when elements in the diagonal lines directly through the sides and above an element are also visible. Checking for this would provide negligible drawing speed improvements and will lead to a slower overall simulation due to processing requirements.
+### Flooding the System
+
+### Optimisation
+
+When optimisation is enabled, an algorithm is used that scans for visible elements using diagonal lines, the `scan` method is called for each outer element of the three visible sides of the isometric system. At most one block will be drawn per line, the block will only be redundant when elements in the diagonal lines directly through the sides and above an element are also visible. Checking for this would provide negligible drawing speed improvements and will lead to a slower overall simulation due to processing requirements.
+
+(`system`: the cube containing all elements, `check`: method to check if an element is of a certain type, `set`: sets an element to a specified type, `HOM_VIS`: homogenous visibility type, for the section of the visualisation containing only elements of the same type, `HET_VIS`: heterogenous visibility type, for the section of the visualisation containing both fluid and block elements)
 
 ```java
 /**

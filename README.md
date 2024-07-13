@@ -196,7 +196,7 @@ The bottom X-coordinate of an element in the system is found at the intercept of
 - y = tan(π/6) * (x-0.5) + 0.05 + j*SIDE
 - y = -tan(π/6) * (x-0.5) + 0.05 + k*SIDE
 
-The Y-coordinate can then be found by substituting the X-coordinate into one of these lines and adding an additional \( i \times \text{SIDE} \) units for vertical scaling. The translation of 0.5 units on the X-axis centers the visualisation. 
+The Y-coordinate can then be found by substituting the X-coordinate into one of these lines and adding an additional i*SIDE units for vertical scaling. The translation of 0.5 units on the X-axis centers the visualisation, and 0.05 in the Y-axis is just for better spacing. 
 
 H and V (denoted by `HOR` and `VER` in the code) refer to the horizontal and vertical lengths of the triangle shown in the illustration above, and is used to obtain the coordinates of the various vertices.
 

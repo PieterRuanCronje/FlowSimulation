@@ -14,8 +14,9 @@ A Java-based program designed to model and visualise fluid behaviour within a 3D
 ## Requirements
 
 - Ensure Java is installed on your system.
+- [StopWatch](https://algs4.cs.princeton.edu/code/edu/princeton/cs/algs4/Stopwatch.java.html)
 - The [StdDraw library](https://algs4.cs.princeton.edu/code/javadoc/edu/princeton/cs/algs4/StdDraw.html) for graphical visualisation is required.
-- The [StdOut library](https://algs4.cs.princeton.edu/code/edu/princeton/cs/algs4/StdOut.java.html) is required by StdDraw. (Both are provided in `lib`, there's no need to go download these)
+- The [StdOut library](https://algs4.cs.princeton.edu/code/edu/princeton/cs/algs4/StdOut.java.html) is required by StdDraw. (All libraries are provided in `lib`, there's no need to go download these)
 
 ## Getting Started
 
@@ -159,8 +160,6 @@ To get the fastest simulation, parameters `opt=1` and `db=1` must be used.
 | 200 | 37.444              | 1.986             |
 | 250 | -                   | 2.801             |
 | 500 | -                   | 10.578            |
-
-This should display correctly in your GitHub README.md file.
 
 ## Double Buffering
 

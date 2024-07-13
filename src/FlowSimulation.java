@@ -41,13 +41,24 @@ public class FlowSimulation {
 
     /*********************************************************************************************/
 
-    private byte[][][] system; // Flow simulation system, refer to constants for clarity.
-    private int n;             // Size of the system.
-    private double p;          // Probability of a space being occupied by a block.
-    private boolean opt;       // Optimise the visualisation or not.
-    private boolean db;        // Use double buffering or not.
+    private final byte[][][] system; // Flow simulation system, refer to constants for clarity.
+    private final int n;             // Size of the system.
+    private final double p;          // Probability of a space being occupied by a block.
+    private final boolean opt;       // Optimise the visualisation or not.
+    private final boolean db;        // Use double buffering or not.
+
+    /*********************************************************************************************/
+
+    // Refer to the README for more information on the geometry of the visualisation.
+
+    private final double M;    // The gradient of the isometric lines.
+    private final double VER;  // The length of the vertical side of the triangle. 
+    private final double HOR;  // The length of the horizontal side of the triangle.
+    private final double SIDE; // The length of a side of an isometric cube.
 
     private final Color BOOK_MEDIUM_BLUE = new Color(40, 150, 204); // Top section of the fluid.
+
+    /*********************************************************************************************/
 
     /**
      * Initialise and run the flow simulation.
@@ -63,6 +74,15 @@ public class FlowSimulation {
         this.p = p;
         this.opt = opt;
         this.db = db;
+
+        // Distance between the center and sides of the system.
+        double width = 0.45;
+        
+        // Visualisation constants.
+        M = Math.tan(Math.PI/6.0);
+        VER = M*width/n;
+        HOR = width/n;
+        SIDE = Math.sqrt(Math.pow(M*width, 2) + Math.pow(width, 2))/n;
 
         // Set up the system and run the flow simulation.
         system = new byte[n][n][n];
@@ -94,7 +114,7 @@ public class FlowSimulation {
     public void flow() {
         for (int j = 0; j < n; j++)
             for (int k = 0; k < n; k++)
-                if (system[0][j][k] == 0) // empty element
+                if (system[n-1][j][k] == 0) // empty element
                     flow(n-1, j, k);
     }
 
@@ -141,7 +161,8 @@ public class FlowSimulation {
     }
 
     /**
-     * Determine the visibility of the elements in the visualisation.
+     * Determine the visibility of the elements in the visualisation by scanning from the three
+     * visible sides of the isometric system.
      * 
      * @param type the element type for which to check visibility (BLOCK, FLUID, or BOTH)
      */
@@ -161,8 +182,7 @@ public class FlowSimulation {
     }
 
     /**
-     * Scans for visible blocks through straight diagonal lines sent from the three visible
-     * sides of the isometric system.
+     * Scans for visible blocks through straight diagonal lines.
      * 
      * @param i vertical index
      * @param j horizontal index
@@ -231,43 +251,37 @@ public class FlowSimulation {
             double[] xRight, double[] xLeft, double[] xTop, double[] ySides, double[] yTop) {
 
         /*
-         * TODO: write comments explaining where the math comes from
+         * Refer to the README for details on the formulas.
          */
 
-        double N = (double) n;
-        double ratio = Math.tan(Math.PI/6.0);
-        double opp = (ratio*0.45)/N;
-        double adj = 0.45/N;
-        double sideLength = Math.sqrt((0.45 * ratio)*(0.45 * ratio) + (0.45*0.45))/N;
-
         // Bottom X & Y coordinates of the block.
-        double X = (k-j)*sideLength/(2*ratio) + 0.5;
-        double Y = ratio*(X-0.5) + 0.05 + (j+i)*sideLength;
+        double X = (k-j)*SIDE/(2*M) + 0.5;
+        double Y = M*(X-0.5) + 0.05 + (j+i)*SIDE;
 
         xRight[0] = X;
         xRight[1] = X;
-        xRight[2] = X + adj;
-        xRight[3] = X + adj;
+        xRight[2] = X + HOR;
+        xRight[3] = X + HOR;
 
         xLeft[0] = X;
         xLeft[1] = X;
-        xLeft[2] = X - adj;
-        xLeft[3] = X - adj;
+        xLeft[2] = X - HOR;
+        xLeft[3] = X - HOR;
 
         xTop[0] = X;
-        xTop[1] = X + adj;
+        xTop[1] = X + HOR;
         xTop[2] = X;
-        xTop[3] = X - adj;
+        xTop[3] = X - HOR;
 
         ySides[0] = Y;
-        ySides[1] = Y + sideLength;
-        ySides[2] = Y + opp + sideLength;
-        ySides[3] = Y + opp;
+        ySides[1] = Y + SIDE;
+        ySides[2] = Y + VER + SIDE;
+        ySides[3] = Y + VER;
 
-        yTop[0] = Y + sideLength;
-        yTop[1] = Y + opp + sideLength;
-        yTop[2] = Y + 2*opp + sideLength;
-        yTop[3] = Y + opp + sideLength;
+        yTop[0] = Y + SIDE;
+        yTop[1] = Y + VER + SIDE;
+        yTop[2] = Y + 2*SIDE;
+        yTop[3] = Y + VER + SIDE;
     }
 
     /**
@@ -366,8 +380,8 @@ public class FlowSimulation {
 
         int n = 0;    // First command-line argument, the size of the system.
         double p = 0; // Second command-line argument, the probability of a block being occupied.
-        int opt = 0;  // Third command-line argument, optimise or not
-        int db = 0;   // Fourth command-line argument, use double buffering or not
+        int opt = 0;  // Third command-line argument, optimise or not.
+        int db = 0;   // Fourth command-line argument, use double buffering or not.
 
         try {
             n = Integer.parseInt(args[0]);

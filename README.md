@@ -147,29 +147,20 @@ public void scan(int i, int j, int k, byte type) {
 
 To get the fastest simulation, parameters `opt=1` and `db=1` must be used.
 
-### Table 1: p=0.66, opt=0, db=1
-| n   | sec    |
-|-----|--------|
-| 10  | 0.568  |
-| 25  | 0.932  |
-| 50  | 2.163  |
-| 100 | 7.492  |
-| 150 | 19.323 |
-| 200 | 37.444 |
-| 250 | -      |
-| 500 | -      |
+### Simulation times in seconds with: `p=0.66`, `db=1`
 
-### Table 2: p=0.66, opt=1, db=1
-| n   | sec    |
-|-----|--------|
-| 10  | 0.495  |
-| 25  | 0.538  |
-| 50  | 0.647  |
-| 100 | 0.947  |
-| 150 | 1.401  |
-| 200 | 1.986  |
-| 250 | 2.801  |
-| 500 | 10.578 |
+| n   | unoptimised (opt=0) | optimised (opt=1) |
+|-----|---------------------|-------------------|
+| 10  | 0.568               | 0.495             |
+| 25  | 0.932               | 0.538             |
+| 50  | 2.163               | 0.647             |
+| 100 | 7.492               | 0.947             |
+| 150 | 19.323              | 1.401             |
+| 200 | 37.444              | 1.986             |
+| 250 | -                   | 2.801             |
+| 500 | -                   | 10.578            |
+
+This should display correctly in your GitHub README.md file.
 
 ## Double Buffering
 
@@ -199,6 +190,58 @@ The bottom X-coordinate of an element in the system is found at the intercept of
 The Y-coordinate can then be found by substituting the X-coordinate into one of these lines and adding an additional i*SIDE units for vertical scaling. The translation of 0.5 units on the X-axis centers the visualisation, and 0.05 in the Y-axis is just for better spacing. 
 
 H and V (denoted by `HOR` and `VER` in the code) refer to the horizontal and vertical lengths of the triangle shown in the illustration above, and is used to obtain the coordinates of the various vertices.
+
+```java
+/**
+ * Calculates the plotting coordinates of an element using the characteristics of
+ * isometric cubes.
+ * 
+ * @param i vertical index
+ * @param j horizontal index
+ * @param k depth index
+ * @param xRight x-coordinates of the right section of the isometric cube
+ * @param xLeft x-coordinates of the left section of the isometric cube
+ * @param xTop x-coordinates of the top section of the isometric cube
+ * @param ySides y-coordinates of the side sections of the isometric cube
+ * @param yTop y-coordinates of the top section of the isometric cube
+ */
+public void calculateCoordinates(int i, int j, int k,
+        double[] xRight, double[] xLeft, double[] xTop, double[] ySides, double[] yTop) {
+
+    /*
+     * Refer to the README for details on the formulas.
+     */
+
+    // Bottom X & Y coordinates of the block.
+    double X = (k-j)*SIDE/(2*M) + 0.5;
+    double Y = M*(X-0.5) + 0.05 + (j+i)*SIDE;
+
+    xRight[0] = X;
+    xRight[1] = X;
+    xRight[2] = X + HOR;
+    xRight[3] = X + HOR;
+
+    xLeft[0] = X;
+    xLeft[1] = X;
+    xLeft[2] = X - HOR;
+    xLeft[3] = X - HOR;
+
+    xTop[0] = X;
+    xTop[1] = X + HOR;
+    xTop[2] = X;
+    xTop[3] = X - HOR;
+
+    ySides[0] = Y;
+    ySides[1] = Y + SIDE;
+    ySides[2] = Y + VER + SIDE;
+    ySides[3] = Y + VER;
+
+    yTop[0] = Y + SIDE;
+    yTop[1] = Y + VER + SIDE;
+    yTop[2] = Y + 2*SIDE;
+    yTop[3] = Y + VER + SIDE;
+}
+```
 
 ## Acknowledgements
 

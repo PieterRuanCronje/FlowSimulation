@@ -150,8 +150,32 @@ public void scan(int i, int j, int k, byte type) {
     }
 }
 ```
-### Performance
-To get the fastest simulation, parameters `opt=1` and `db=1` must be used. I experimented with parallelism in the flow section of the simulation, it provided minimal improvements in speed and made the code more complex so decided to keep the serial implementation. Because of the way the visualisation is done it would be infeasible in parralel, the synchronisation required to place blocks in the correct order would be extremely difficult and I suspect that it would slow down the simulation.
+
+To get the fastest simulation, parameters `opt=1` and `db=1` must be used.
+
+### Table 1: p=0.66, opt=0, db=1
+| n   | sec    |
+|-----|--------|
+| 10  | 0.568  |
+| 25  | 0.932  |
+| 50  | 2.163  |
+| 100 | 7.492  |
+| 150 | 19.323 |
+| 200 | 37.444 |
+| 250 | -      |
+| 500 | -      |
+
+### Table 2: p=0.66, opt=1, db=1
+| n   | sec    |
+|-----|--------|
+| 10  | 0.495  |
+| 25  | 0.538  |
+| 50  | 0.647  |
+| 100 | 0.947  |
+| 150 | 1.401  |
+| 200 | 1.986  |
+| 250 | 2.801  |
+| 500 | 10.578 |
 
 ## Double Buffering
 

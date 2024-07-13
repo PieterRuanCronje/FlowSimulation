@@ -2,7 +2,7 @@
 
 ## Overview
 
-A Java-based program designed to model and visualise fluid behaviour within a 3D grid system populated with randomly placed blocks. It employs bitwise operations for efficient type management and utilises a stack-based flood fill algorithm. Visualisation is achieved using the characteristics of isometric blocks, detailed under the "Mathematics for Isometric Visualisation" heading.
+A Java-based program designed to model and visualise fluid behaviour within a 3D grid system populated with randomly placed blocks. It employs bitwise operations for efficient type management and utilises a stack-based flood fill algorithm. Visualisation is achieved using the characteristics of isometric blocks, detailed under the "Geometry for Isometric Visualisation" heading.
 
 ## Implementation Features
 
@@ -187,9 +187,19 @@ java -cp bin FlowSimulation 25 0.66 1 0
 ```
 ![Optimised with Double Buffering](https://github.com/PieterRuanCronje/FlowSimulation/assets/79271609/cfcf3e26-274f-4fd4-a0cd-0889e2fbd4ad)
 
-## Mathematics for Isometric Visualisation
+## Geometry for Isometric Visualisation
 
-TODO
+![isometric_geometry](https://github.com/user-attachments/assets/e72a3b80-fc12-4c8d-89bd-d523240aa3b6)
+
+The bottom X-coordinate of an element in the system is found at the intercept of the two lines:
+
+\[ y = \tan\left(\frac{\pi}{6}\right)(x - 0.5) + 0.05 + j \times \text{SIDE} \]
+
+\[ y = -\tan\left(\frac{\pi}{6}\right)(x - 0.5) + 0.05 + k \times \text{SIDE} \]
+
+The Y-coordinate can then be found by substituting the X-coordinate into one of these lines and adding an additional \( i \times \text{SIDE} \) units for vertical scaling. The translation of 0.5 units on the X-axis centers the visualisation. 
+
+H and V (denoted by `HOR` and `VER` in the code) refer to the horizontal and vertical lengths of the triangle shown in the illustration above, and is used to obtain the coordinates of the various vertices.
 
 ## Acknowledgements
 

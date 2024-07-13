@@ -165,13 +165,13 @@ To get the fastest simulation, parameters `opt=1` and `db=1` must be used.
 
 When double buffering is enabled, the program processes the visualisation completely before displaying the result, which is ideal for large systems. When disabled, the program shows how the grid is populated with blocks and fluid from the bottom upwards.
 
-#### Example 1: Unoptimised Visualisation without Double Buffering
+#### Example 1: Unoptimised Partial Visualisation without Double Buffering
 ```bash
 java -cp bin FlowSimulation 25 0.66 0 0
 ```
 ![Unoptimised with Double Buffering](https://github.com/PieterRuanCronje/FlowSimulation/assets/79271609/7d726012-fc65-4c5c-beab-8b2223779d56)
 
-#### Example 2: Optimised Visualisation without Double Buffering
+#### Example 2: Optimised Partial Visualisation without Double Buffering
 ```bash
 java -cp bin FlowSimulation 25 0.66 1 0
 ```

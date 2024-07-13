@@ -244,6 +244,6 @@ public void calculateCoordinates(int i, int j, int k,
 
 ## Acknowledgements
 
-- The project uses the StdDraw, StdOut, adn Stopwatch libraries from "Algorithms, 4th Edition" by Robert Sedgewick and Kevin Wayne.
+- This project uses the StdDraw, StdOut, and Stopwatch libraries from "Algorithms, 4th Edition" by Robert Sedgewick and Kevin Wayne.
 
 ---

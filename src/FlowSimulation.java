@@ -227,7 +227,7 @@ public class FlowSimulation {
         // Loop from bottom back corner to top front corner for correct block placement.
         for (int i = 0; i < n; i++)
             for (int j = n-1; j >= 0; j--)
-                for (int k = n - 1; k >= 0; k--)
+                for (int k = n-1; k >= 0; k--)
                     placeBlock(i, j, k);
 
         // Show the reuslt of the simulation.

@@ -181,7 +181,7 @@ java -cp bin FlowSimulation 25 0.66 1 0
 
 ![isometric_geometry](https://github.com/user-attachments/assets/e72a3b80-fc12-4c8d-89bd-d523240aa3b6)
 
-The bottom X-coordinate of an element in the system is found at the intercept of the two lines:
+The bottom X-coordinate of an element in the system is found at the intersection of the two lines:
 
 - y = tan(π/6) * (x-0.5) + 0.05 + j*SIDE
 - y = -tan(π/6) * (x-0.5) + 0.05 + k*SIDE

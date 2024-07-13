@@ -14,7 +14,7 @@ A Java-based program designed to model and visualise fluid behaviour within a 3D
 ## Requirements
 
 - Ensure Java is installed on your system.
-- The [StopWatch library](https://algs4.cs.princeton.edu/code/edu/princeton/cs/algs4/Stopwatch.java.html) to time the simulation.
+- The [Stopwatch library](https://algs4.cs.princeton.edu/code/edu/princeton/cs/algs4/Stopwatch.java.html) to time the simulation.
 - The [StdDraw library](https://algs4.cs.princeton.edu/code/javadoc/edu/princeton/cs/algs4/StdDraw.html) for graphical visualisation is required.
 - The [StdOut library](https://algs4.cs.princeton.edu/code/edu/princeton/cs/algs4/StdOut.java.html) is required by StdDraw. (All libraries are provided in `lib`, there's no need to go download these)
 
@@ -244,6 +244,6 @@ public void calculateCoordinates(int i, int j, int k,
 
 ## Acknowledgements
 
-- The project uses the StdDraw library from "Algorithms, 4th Edition" by Robert Sedgewick and Kevin Wayne.
+- The project uses the StdDraw, StdOut, adn Stopwatch libraries from "Algorithms, 4th Edition" by Robert Sedgewick and Kevin Wayne.
 
 ---

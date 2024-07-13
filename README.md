@@ -51,15 +51,9 @@ java -cp bin FlowSimulation 10 0.67 1 1
 
 #### Example 2:
 ```bash
-java -cp bin FlowSimulation 150 0.66 1 1
+java -cp bin FlowSimulation 500 0.66 1 1
 ```
-![Simulation with n=150, p=0.66](https://github.com/PieterRuanCronje/FlowSimulation/assets/79271609/790fdeec-47f2-4ddc-970c-e3e88b5ae290)
-
-#### Example 3:
-```bash
-java -cp bin FlowSimulation 15 0.75 1 1
-```
-![Simulation with n=15, p=0.75](https://github.com/PieterRuanCronje/FlowSimulation/assets/79271609/cec393c0-fec9-47e2-8a31-a798b67bd749)
+![Simulation with n=500, p=0.66](https://github.com/user-attachments/assets/16a6157f-63ce-4dcd-b425-e95fa099a0fa)
 
 ## Implementation Details
 

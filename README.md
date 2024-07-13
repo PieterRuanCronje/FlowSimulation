@@ -193,9 +193,8 @@ java -cp bin FlowSimulation 25 0.66 1 0
 
 The bottom X-coordinate of an element in the system is found at the intercept of the two lines:
 
-\[ y = \tan\left(\frac{\pi}{6}\right)(x - 0.5) + 0.05 + j \times \text{SIDE} \]
-
-\[ y = -\tan\left(\frac{\pi}{6}\right)(x - 0.5) + 0.05 + k \times \text{SIDE} \]
+- y = tan(π/6) * (x-0.5) + 0.05 + j*SIDE
+- y = -tan(π/6) * (x-0.5) + 0.05 + k*SIDE
 
 The Y-coordinate can then be found by substituting the X-coordinate into one of these lines and adding an additional \( i \times \text{SIDE} \) units for vertical scaling. The translation of 0.5 units on the X-axis centers the visualisation. 
 

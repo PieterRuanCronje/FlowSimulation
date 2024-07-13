@@ -67,7 +67,7 @@ java -cp bin FlowSimulation 15 0.75 1 1
 
 The block system is flooded with fluid from the top layer. This is achieved using a simple stack-based percolation algorithm. The algorithm was initially recursively defined, but I found that for large values of `n` this would cause a stack-overflow error. The algorithm was easily coverted to an iterative approach. The following method, `flow`, is called for each open element in the top layer of the system.
 
-(`system`: the cube containing all elements, `check`: method to check if an element is of a certain type, `set`: sets an element to a specified type, `FLUID`: liquid type, `BLOCK`: solid type)
+(`system`: the cubic system containing all elements, `check`: method to check if an element is of a certain type, `set`: sets an element to a specified type, `FLUID`: liquid type, `BLOCK`: solid type)
 
 ```java
 /**
@@ -103,8 +103,8 @@ public void flow(int startI, int startJ, int startK) {
 
         system[i][j][k] = set(system[i][j][k], FLUID);
 
-        // For flow to go upwards as well, push {i-1, j, k} to the stack.
-        stack.push(new int[]{i+1, j, k});
+        // For flow to go upwards as well, push {i+1, j, k} to the stack.
+        stack.push(new int[]{i-1, j, k});
         stack.push(new int[]{i, j-1, k});
         stack.push(new int[]{i, j+1, k});
         stack.push(new int[]{i, j, k+1});
@@ -117,7 +117,7 @@ public void flow(int startI, int startJ, int startK) {
 
 When optimisation is enabled, an algorithm is used that scans for visible elements using diagonal lines, the `scan` method is called for each outer element of the three visible sides of the isometric system. At most one block will be drawn per line, the block will only be redundant when elements in the diagonal lines directly through the sides and above an element are also visible. Checking for this would provide negligible drawing speed improvements and will lead to a slower overall simulation due to processing requirements.
 
-(`system`: the cube containing all elements, `check`: method to check if an element is of a certain type, `set`: sets an element to a specified type, `HOM_VIS`: homogenous visibility type, for the section of the visualisation containing only elements of the same type, `HET_VIS`: heterogenous visibility type, for the section of the visualisation containing both fluid and block elements)
+(`system`: the cubic system containing all elements, `check`: method to check if an element is of a certain type, `set`: sets an element to a specified type, `HOM_VIS`: homogenous visibility type, for the section of the visualisation containing only elements of the same type, `HET_VIS`: heterogenous visibility type, for the section of the visualisation containing both fluid and block elements)
 
 ```java
 /**
@@ -146,16 +146,12 @@ public void scan(int i, int j, int k, byte type) {
             system[i][j][k] = set(element, HOM_VIS);
             break;
 
-        } else { i++; j--; k++; }
+        } else { i--; j++; k++; }
     }
 }
 ```
-
-#### Partially Drawn Simulation with Optimisation:
-```bash
-java -cp bin FlowSimulation 25 0.66 1 0
-```
-![Optimised](https://github.com/PieterRuanCronje/FlowSimulation/assets/79271609/29d7fc48-bd1e-4f0e-af36-501678247561)
+### Performance
+To get the fastest simulation, parameters `opt=1` and `db=1` must be used. I experimented with parallelism in the flow section of the simulation, it provided minimal improvements in speed and made the code more complex so decided to keep the serial implementation. Because of the way the visualisation is done it would be infeasible in parralel, the synchronisation required to place blocks in the correct order would be extremely difficult and I suspect that it would slow down the simulation.
 
 ## Double Buffering
 

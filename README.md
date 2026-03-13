@@ -1,4 +1,4 @@
-# FlowSimulation
+# Flow Visualization
 
 ## Overview
 
